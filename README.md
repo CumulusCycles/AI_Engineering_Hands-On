@@ -1,9 +1,9 @@
-<table>
+<table style="border: none; border-collapse: collapse;">
   <tr>
-    <td>
+    <td style="border: none; padding: 0;">
       <img src="img/logo_transparent_sm.png" alt="Logo" width="200">
     </td>
-    <td>
+    <td style="border: none; padding: 0;">
       <h1>AI Engineering Hands-On</h1>
       Repo for the AI Engineering Hands-On <a href="https://www.youtube.com/playlist?list=PLRBkbp6t5gM151rUSi6Z8T8n6UCppEEMH">Playlist</a>.
     </td>

@@ -1,0 +1,371 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+*.mo
+*.pot
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+instance/
+.webassets-cache
+.scrapy
+docs/_build/
+target/
+.ipynb_checkpoints
+profile_default/
+ipython_config.py
+.python-version
+pip-selfcheck.json
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv
+.spyderproject
+.spyproject
+.ropeproject
+/site
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+
+# Node.js / npm
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+pids
+*.pid
+*.seed
+*.pid.lock
+lib-cov
+coverage
+*.lcov
+.nyc_output
+.grunt
+bower_components
+.lock-wscript
+build/Release
+.npm
+.eslintcache
+.stylelintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+.cache
+.parcel-cache
+.next
+.nuxt
+dist
+dist-ssr
+*.local
+
+# React / Next.js
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.turbo
+.swc/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+*.env
+.envrc
+
+# Gradio
+gradio_cached_examples/
+flagged/
+gradio_tmp/
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/config.toml
+
+# Vercel
+.vercel
+.vercel.json
+
+# AWS
+.aws/
+*.pem
+*.key
+.aws-sam/
+samconfig.toml
+
+# GCP / Google Cloud
+.gcloud/
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+service-account*.json
+gcloud-key.json
+.gcloudignore
+
+# Ollama
+.ollama/
+models/
+ollama_data/
+
+# IDEs and editors
+.vscode/
+.cursor/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+tmp/
+temp/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Model files (often large)
+*.pt
+*.pth
+*.h5
+*.ckpt
+*.safetensors
+models/*.bin
+models/*.pt
+models/*.pth
+models/*.h5
+!models/.gitkeep
+
+# Data files (often large)
+data/
+datasets/
+*.csv
+*.parquet
+*.feather
+*.arrow
+*.pkl
+*.pickle
+!data/.gitkeep
+
+# Weights and checkpoints
+weights/
+checkpoints/
+*.weights
+
+# API keys and secrets
+secrets/
+*.secret
+*.key
+*.pem
+*.p12
+*.pfx
+
+# OpenAI
+.openai/
+openai_cache/
+.openai_cache/
+*.openai
+openai_config.json
+.openai_config.json
+openai_key.txt
+.openai_key.txt
+
+# LangChain / LangSmith
+.langchain/
+.langsmith/
+langsmith.json
+.langsmith.json
+langchain_cache/
+.langchain_cache/
+
+# Hugging Face
+.huggingface/
+.cache/huggingface/
+transformers_cache/
+.tokenizers/
+
+# Vector Databases
+.chroma/
+chroma_db/
+.pinecone/
+qdrant_storage/
+.weaviate/
+weaviate_data/
+vectorstore/
+embeddings/
+
+# ML Experiment Tracking
+wandb/
+.wandb/
+mlruns/
+.mlflow/
+mlflow.db
+tensorboard_logs/
+tb_logs/
+*.tfevents.*
+
+# Python Package Managers
+Pipfile.lock
+poetry.lock
+.poetry/
+.rye/
+pyproject.toml.bak
+requirements*.txt.bak
+
+# TypeScript
+*.tsbuildinfo
+.tsbuildinfo
+
+# Testing
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+.coverage.*
+coverage/
+*.cover
+.hypothesis/
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+docker-compose.*.yml
+!docker-compose.yml
+
+# Terraform / Infrastructure as Code
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+.terraformrc
+terraform.rc
+
+# Anaconda / Miniconda
+.conda/
+conda-meta/
+*.conda
+
+# pyenv
+.python-version
+
+# Miscellaneous
+*.zip
+*.tar.gz
+*.rar
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Additional AI/ML Tools
+.anthropic/
+anthropic_cache/
+.claude/
+cohere_cache/
+.cohere/
+mistral_cache/
+.mistral/
+
+# Local development
+.local/
+local/
+*.local

@@ -219,7 +219,7 @@ temp/
 
 # Jupyter Notebooks
 .ipynb_checkpoints
-*.ipynb
+# *.ipynb
 
 # Model files (often large)
 *.pt

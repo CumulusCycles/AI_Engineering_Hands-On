@@ -19,6 +19,7 @@
 ## Companion Videos
 - [Intro](https://youtu.be/HaXveXkSwlQ)
 - [Dev Environment Config](https://youtu.be/36sbUO2LaOk)
+- [LLMs](https://youtu.be/seFjZz08KSw)
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
 

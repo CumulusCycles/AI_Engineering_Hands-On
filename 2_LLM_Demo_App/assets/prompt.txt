@@ -1,0 +1,3 @@
+Please read the Agents.md file in this directory and build the entire project from scratch according to its specifications. Follow the file exactly - it contains all the information needed to implement this Outdoor Adventure Gear Catalog Search application. Start by reading Agents.md, then create all necessary files, directories, and configurations as specified.
+
+When checking the shell scripts at the end, please verify all services are deployed and working properly before seeding the data stores. If there are any errors, fix and evaluate again.

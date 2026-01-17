@@ -1,0 +1,14 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "chromadb>=1.4.1",
+    "fastapi[standard]>=0.128.0",
+    "plotly>=6.5.2",
+    "sentence-transformers>=5.2.0",
+    "streamlit>=1.53.0",
+    "umap-learn>=0.5.11",
+]

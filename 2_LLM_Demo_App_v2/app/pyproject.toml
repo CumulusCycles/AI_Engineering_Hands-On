@@ -8,6 +8,7 @@ dependencies = [
     "chromadb>=1.4.1",
     "fastapi[standard]>=0.128.0",
     "plotly>=6.5.2",
+    "requests>=2.31.0",
     "sentence-transformers>=5.2.0",
     "streamlit>=1.53.0",
     "umap-learn>=0.5.11",

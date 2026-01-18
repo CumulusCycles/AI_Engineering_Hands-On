@@ -7,11 +7,60 @@ import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
 from umap import UMAP
-
-from embeddings import tokenize, encode, get_embedding_stats
-from search import get_product_count, search_products, get_all_embeddings, seed_products
-import json
+import requests
 import os
+
+# FastAPI backend configuration
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
+
+# Helper functions to call FastAPI backend
+def get_product_count():
+    """Get product count from FastAPI backend."""
+    response = requests.get(f"{API_BASE_URL}/health")
+    response.raise_for_status()
+    return response.json().get("product_count", 0)
+
+def seed_products_from_api():
+    """Seed products via FastAPI backend."""
+    response = requests.post(f"{API_BASE_URL}/seed")
+    response.raise_for_status()
+    return response.json()
+
+def tokenize_via_api(text: str):
+    """Tokenize text via FastAPI backend."""
+    response = requests.post(f"{API_BASE_URL}/tokenize", json={"text": text})
+    response.raise_for_status()
+    return response.json()
+
+def encode_via_api(text: str):
+    """Get embedding via FastAPI backend."""
+    response = requests.post(f"{API_BASE_URL}/embedding", json={"text": text})
+    response.raise_for_status()
+    data = response.json()
+    return data["embedding"]
+
+def get_embedding_stats_from_api(embedding):
+    """Calculate embedding stats (client-side from embedding)."""
+    arr = np.array(embedding)
+    return {
+        "dimension": len(embedding),
+        "min": float(np.min(arr)),
+        "max": float(np.max(arr)),
+        "mean": float(np.mean(arr)),
+        "std": float(np.std(arr))
+    }
+
+def search_products_via_api(query: str, top_k: int = 3):
+    """Search products via FastAPI backend."""
+    response = requests.post(f"{API_BASE_URL}/search", json={"query": query, "top_k": top_k})
+    response.raise_for_status()
+    return response.json().get("results", [])
+
+def get_all_embeddings_from_api():
+    """Get all embeddings via FastAPI backend."""
+    response = requests.get(f"{API_BASE_URL}/embeddings")
+    response.raise_for_status()
+    return response.json()
 
 st.set_page_config(page_title="LLM Pipeline Demo", layout="wide")
 
@@ -26,13 +75,13 @@ with st.sidebar:
     
     if count == 0:
         if st.button("🌱 Seed Database"):
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            data_file = os.path.join(current_dir, "data", "seed_products.json")
-            with open(data_file, 'r') as f:
-                products = json.load(f)
-            result = seed_products(products)
-            st.success(f"Seeded {result['created']} products!")
-            st.rerun()
+            try:
+                result = seed_products_from_api()
+                st.success(f"Seeded {result['created']} products!")
+                st.rerun()
+            except requests.exceptions.RequestException as e:
+                st.error(f"Failed to seed database: {e}")
+                st.info(f"Make sure the FastAPI backend is running at {API_BASE_URL}")
 
     # Vector store visualization
     if count > 0:
@@ -51,7 +100,12 @@ if st.button("🚀 Run Pipeline", type="primary") and query:
         # Step 1: Tokenization
         st.subheader("Step 1: Tokenization")
         with st.spinner("Tokenizing..."):
-            token_result = tokenize(query)
+            try:
+                token_result = tokenize_via_api(query)
+            except requests.exceptions.RequestException as e:
+                st.error(f"Failed to tokenize: {e}")
+                st.info(f"Make sure the FastAPI backend is running at {API_BASE_URL}")
+                st.stop()
         
         st.write(f"**Token count:** {token_result['token_count']}")
 
@@ -68,8 +122,13 @@ if st.button("🚀 Run Pipeline", type="primary") and query:
         # Step 2: Embedding
         st.subheader("Step 2: Embedding")
         with st.spinner("Generating embedding..."):
-            embedding = encode(query)
-            stats = get_embedding_stats(embedding)
+            try:
+                embedding = encode_via_api(query)
+                stats = get_embedding_stats_from_api(embedding)
+            except requests.exceptions.RequestException as e:
+                st.error(f"Failed to generate embedding: {e}")
+                st.info(f"Make sure the FastAPI backend is running at {API_BASE_URL}")
+                st.stop()
         
         # Key insight message
         st.info(f"Your query has been converted into a **{stats['dimension']}-dimensional vector**.")
@@ -107,14 +166,23 @@ if st.button("🚀 Run Pipeline", type="primary") and query:
     # Step 3: Search Results
     st.subheader("Step 3: Similarity Search")
     with st.spinner("Searching..."):
-        results = search_products(query, top_k=3)
+        try:
+            results = search_products_via_api(query, top_k=3)
+        except requests.exceptions.RequestException as e:
+            st.error(f"Failed to search: {e}")
+            st.info(f"Make sure the FastAPI backend is running at {API_BASE_URL}")
+            results = []
     
     if not results:
         st.warning("No products found. Please seed the database first.")
     else:
         # Get top match embedding for comparison
         top_match = results[0]
-        top_match_embedding = encode(top_match['description'])
+        try:
+            top_match_embedding = encode_via_api(top_match['description'])
+        except requests.exceptions.RequestException as e:
+            st.warning(f"Failed to get top match embedding: {e}")
+            st.stop()
         
         # Calculate cosine similarity for display
         query_arr = np.array(embedding)
@@ -188,7 +256,12 @@ if st.session_state.get('show_embeddings', False):
     st.subheader("📊 Vector Store Embedding Space (2D UMAP)")
     
     with st.spinner("Computing 2D projection..."):
-        data = get_all_embeddings()
+        try:
+            data = get_all_embeddings_from_api()
+        except requests.exceptions.RequestException as e:
+            st.error(f"Failed to get embeddings: {e}")
+            st.info(f"Make sure the FastAPI backend is running at {API_BASE_URL}")
+            data = {"names": [], "embeddings": [], "categories": []}
 
         if len(data['embeddings']) > 0:
             embeddings = np.array(data['embeddings'])

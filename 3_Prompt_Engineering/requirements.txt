@@ -1,0 +1,4 @@
+jupyterlab
+openai
+pydantic
+python-dotenv

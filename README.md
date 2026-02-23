@@ -20,6 +20,7 @@
 - [3 — Prompt Engineering](#3--prompt-engineering)
 - [4 — RAG](#4--rag)
 - [5 — RAG App](#5--rag-app)
+- [6 — Agents](#6--agents)
 
 ## Overview
 
@@ -32,6 +33,7 @@
 | [3_Prompt_Engineering](3_Prompt_Engineering/) | Prompt engineering as runtime configuration: foundations, structure, structured outputs, advanced techniques. |
 | [4_RAG](4_RAG/) | RAG: why + pipeline, then concrete examples (Q&A, citations, chunking, evaluation). |
 | [5_RAG_App](5_RAG_App/) | Streamlit app: Q&A over `data/*.md` (sentence chunking, top-8 retrieval). |
+| [6_Agents](6_Agents/) | Function calling, agent loops, RAG as a tool, and a Streamlit agent app with visible reasoning traces. |
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
 
@@ -138,5 +140,15 @@ Two app variants that demonstrate semantic search and the LLM pipeline.
 ## 5 — RAG App
 
 [**5_RAG_App/**](5_RAG_App/) — A single-scope Streamlit app: ask questions over all markdown files in `data/`. Sentence chunking, top-8 retrieval, answer + sources. No notebooks; run `streamlit run app.py` from `5_RAG_App/`. See [5_RAG_App/README.md](5_RAG_App/README.md).
+
+<p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
+
+## 6 — Agents
+
+[**6_Agents/**](6_Agents/) — AI agents: the LLM decides what to do, not just what to say.
+
+- **Notebooks:** Manual function calling walkthrough, automated agent loop (`run_agent()`), RAG as a tool alongside structured lookups.
+- **App:** Streamlit agent app with an expandable trace panel showing every tool call, argument, and result.
+- Shared `tools/` package (tool schemas + implementations) used by both notebooks and app. Requires OpenAI API key. See [6_Agents/README.md](6_Agents/README.md).
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>

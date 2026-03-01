@@ -21,6 +21,7 @@
 - [4 — RAG](#4--rag)
 - [5 — RAG App](#5--rag-app)
 - [6 — Agents](#6--agents)
+- [7 — Evaluations](#7--evaluations)
 
 ## Overview
 
@@ -34,6 +35,7 @@
 | [4_RAG](4_RAG/) | RAG: why + pipeline, then concrete examples (Q&A, citations, chunking, evaluation). |
 | [5_RAG_App](5_RAG_App/) | Streamlit app: Q&A over `data/*.md` (sentence chunking, top-8 retrieval). |
 | [6_Agents](6_Agents/) | Function calling, agent loops, RAG as a tool, and a Streamlit agent app with visible reasoning traces. |
+| [7_Evaluations](7_Evaluations/) | Golden datasets, retrieval metrics (precision@k, MRR), LLM-as-judge, and agent routing eval. |
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
 
@@ -150,5 +152,15 @@ Two app variants that demonstrate semantic search and the LLM pipeline.
 - **Notebooks:** Manual function calling walkthrough, automated agent loop (`run_agent()`), RAG as a tool alongside structured lookups.
 - **App:** Streamlit agent app with an expandable trace panel showing every tool call, argument, and result.
 - Shared `tools/` package (tool schemas + implementations) used by both notebooks and app. Requires OpenAI API key. See [6_Agents/README.md](6_Agents/README.md).
+
+<p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
+
+## 7 — Evaluations
+
+[**7_Evaluations/**](7_Evaluations/) — Systematic evaluation for the RAG pipelines and agent from modules 4–6.
+
+- **Notebooks:** Golden dataset construction, retrieval eval (precision@k, recall@k, MRR), generation eval (semantic similarity + LLM-as-judge), agent eval (tool routing accuracy + end-to-end quality).
+- **App:** Streamlit eval harness — select an eval type, run it against the golden dataset, get a scored results dashboard with per-case pass/fail.
+- Reuses the `AI_Agent_Insure.md` document, ChromaDB index, and agent tools from modules 4–6. See [7_Evaluations/README.md](7_Evaluations/README.md).
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>

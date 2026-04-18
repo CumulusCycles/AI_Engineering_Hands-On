@@ -1,0 +1,1 @@
+"""ScriptSprout FastAPI application package."""

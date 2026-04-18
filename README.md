@@ -184,3 +184,9 @@ Two app variants that demonstrate semantic search and the LLM pipeline.
 [**9_AI_Workflows/**](9_AI_Workflows/) — A **Video Content Generator** CLI: synopsis, title, description, full story, guardrails check, and DALL·E 3 thumbnail using the OpenAI API. The project lives in **[`9_AI_Workflows/`](9_AI_Workflows/)** (run **`uv`** there); the Python package is under **`src/`** with Pydantic models, modular boundaries (`api`, `workflow`, `output_bundle`, `story`, etc.), **retries** on transient API errors, **multi-draft** story correction when guardrails fail, and **collision-safe** output folders. See [9_AI_Workflows/README.md](9_AI_Workflows/README.md) and [9_AI_Workflows/MODEL_USAGE_GUIDE.md](9_AI_Workflows/MODEL_USAGE_GUIDE.md).
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
+
+## 10 — AI Workflow App
+
+[**10_AI_Workflow_App/**](10_AI_Workflow_App/) — **ScriptSprout** in [`ScriptSprout/`](10_AI_Workflow_App/ScriptSprout/): the chapter 9 narration pipeline as a multi-user product (Vite + React, FastAPI, SQLite, ChromaDB, OpenAI). See [10_AI_Workflow_App/README.md](10_AI_Workflow_App/README.md), [10_AI_Workflow_App/ARCHITECTURE.md](10_AI_Workflow_App/ARCHITECTURE.md), and [10_AI_Workflow_App/architecture.html](10_AI_Workflow_App/architecture.html).
+
+<p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>

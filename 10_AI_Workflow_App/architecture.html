@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ScriptSprout Architecture — Request flow</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121a31;
+      --text: #e8eeff;
+      --muted: #9fb0dc;
+      --line: #2a3a6b;
+      /* Brand palette (README Brand Colors) */
+      --navy: #2f3e57;
+      --green: #4caf50;
+      --highlight: #f4c542;
+      --navy-light: #3d5280;
+      --green-deep: #2e7d32;
+      --teal: #0c8d84;
+      --teal-deep: #0a6b64;
+      --gold: #c9a227;
+      --gold-deep: #8b6914;
+      --sql: #1e3a5f;
+      --sql-deep: #152a45;
+      --chroma: #5c3d7a;
+      --chroma-deep: #3d2854;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: radial-gradient(1200px 500px at 20% -10%, #1b2750 0%, var(--bg) 60%);
+    }
+    .wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, #121a31 0%, #0f162c 100%);
+      border: 1px solid #24325f;
+      border-radius: 16px;
+      padding: 22px;
+    }
+    h1 { margin: 0 0 6px; font-size: 28px; }
+    h2 { margin: 0 0 8px; font-size: 20px; }
+    p { margin: 0 0 16px; color: var(--muted); line-height: 1.45; }
+    .box {
+      border: 1px solid var(--line);
+      background: rgba(8, 14, 30, 0.58);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 14px;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .node {
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 88px;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+    .title { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+    .sub { font-size: 12px; color: rgba(255,255,255,0.9); line-height: 1.35; }
+    .a { background: linear-gradient(135deg, var(--navy-light), var(--navy)); }
+    .b { background: linear-gradient(135deg, var(--green), var(--green-deep)); }
+    .c { background: linear-gradient(135deg, var(--teal), var(--teal-deep)); }
+    .d { background: linear-gradient(135deg, var(--gold), var(--gold-deep)); }
+    .e { background: linear-gradient(135deg, var(--sql), var(--sql-deep)); }
+    .f { background: linear-gradient(135deg, var(--chroma), var(--chroma-deep)); }
+    .arrow { font-size: 28px; color: #bdd0ff; width: 28px; text-align: center; }
+    .arrow-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #bdd0ff;
+      font-size: 24px;
+      padding: 4px 0;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+      margin-top: 16px;
+    }
+    .split-col { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+    .split-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .parallel {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 12px;
+      justify-content: center;
+    }
+    .parallel .node { min-height: 72px; flex: 1 1 160px; max-width: 220px; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    ul { margin: 8px 0 0 18px; color: #dbe5ff; }
+    li { margin: 6px 0; }
+    code { color: #c5d5ff; }
+    .note {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border-left: 3px solid var(--green);
+      background: rgba(76, 175, 80, 0.1);
+      font-size: 13px;
+      color: #dbe5ff;
+      line-height: 1.45;
+    }
+    @media (max-width: 900px) {
+      .flow { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); width: auto; }
+      .split { grid-template-columns: 1fr; }
+      .parallel .node { max-width: none; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>ScriptSprout</h1>
+    <p>
+      Full-stack request flow. The browser talks to a <strong>FastAPI</strong> ASGI app
+      (<code>create_app()</code> in <code>ScriptSprout/backend/app/main.py</code>), usually run with
+      <strong>Uvicorn</strong> in dev from <code>ScriptSprout/backend/</code>. Downstream: services, OpenAI SDK, SQLite, ChromaDB.
+      Paths below are under <strong><code>ScriptSprout/</code></strong> (runnable app root).
+    </p>
+
+    <section class="box">
+      <h2>Browser → FastAPI (HTTP / REST)</h2>
+      <div class="flow">
+        <article class="node a">
+          <div class="title">React SPA</div>
+          <div class="sub">Vite + TypeScript; session cookies; proxies <code>/api/*</code> in dev.</div>
+        </article>
+        <div class="arrow">→</div>
+        <article class="node b">
+          <div class="title">FastAPI routers</div>
+          <div class="sub"><code>ScriptSprout/backend/app/api/routes/</code> — auth, content, NLP, search, admin, health, meta. Included by <code>main.create_app()</code>.</div>
+        </article>
+      </div>
+
+      <div class="arrow-col">↓</div>
+
+      <div class="split">
+        <div class="split-col">
+          <div class="split-label">Primary path</div>
+          <article class="node c">
+            <div class="title">app/services (orchestration)</div>
+            <div class="sub">Generative steps, <code>responses.create</code> / <code>parse</code>, images, TTS, embeddings, retries, Chroma helpers.</div>
+          </article>
+          <div class="arrow-col">↓</div>
+          <div class="parallel">
+            <article class="node d">
+              <div class="title">OpenAI SDK</div>
+              <div class="sub">Responses, Images, Audio, Embeddings.</div>
+            </article>
+            <article class="node e">
+              <div class="title">SQLite</div>
+              <div class="sub">ORM writes, blobs, model calls, runs.</div>
+            </article>
+            <article class="node f">
+              <div class="title">ChromaDB</div>
+              <div class="sub"><code>content_semantic_index</code> upserts &amp; search.</div>
+            </article>
+          </div>
+          <p class="sub" style="margin:0;font-size:11px;color:var(--muted);text-align:center;">
+            All three are reachable from <strong>services</strong> (parallel integrations, not a single linear pipeline).
+          </p>
+        </div>
+        <div class="split-col">
+          <div class="split-label">Thin path</div>
+          <article class="node e">
+            <div class="title">app/db/repos → SQLite</div>
+            <div class="sub"><code>ScriptSprout/backend/app/db/repos/*</code> from routes — lists, detail, some admin reads without a heavy service wrapper.</div>
+          </article>
+        </div>
+      </div>
+
+      <div class="note">
+        <strong>Thin path <code>API → app/db/repos → SQL</code></strong> (above right): repo-centric reads/writes without a heavy service wrapper.
+        <strong>Services</strong> path: generative workflows, indexing, and anything that coordinates OpenAI + persistence (services still use SQLAlchemy/repos internally where needed).
+        One route handler may call <strong>both</strong> repos and services in the same request.
+        No Agents SDK and no OpenAI function-tool loop — control flow is product-defined Python.
+      </div>
+    </section>
+
+    <section class="box">
+      <h2>Module map (where it lives)</h2>
+      <div class="grid">
+        <article class="node c">
+          <div class="title">Backend entry</div>
+          <div class="sub"><code>ScriptSprout/backend/app/main.py</code> — <code>create_app()</code>, CORS, router includes, Chroma on <code>app.state</code>.</div>
+        </article>
+        <article class="node a">
+          <div class="title">Frontend</div>
+          <div class="sub"><code>ScriptSprout/frontend/src/</code> — React app, <code>App.tsx</code> routes, pages, API clients.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2>What this emphasizes</h2>
+      <ul>
+        <li>HITL workflow and guardrails in a <strong>real web app</strong> (not a CLI).</li>
+        <li>Clear split: <strong>routes</strong> vs <strong>services</strong> vs <strong>repos</strong> vs <strong>stores</strong>.</li>
+        <li>Same teaching spirit as chapter 9 — <strong>orchestrated workflow</strong>, not an autonomous multi-tool agent.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

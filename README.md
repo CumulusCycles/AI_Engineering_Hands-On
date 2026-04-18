@@ -22,6 +22,8 @@
 - [5 — RAG App](#5--rag-app)
 - [6 — Agents](#6--agents)
 - [7 — Evaluations](#7--evaluations)
+- [8 — OpenAI API](#8--openai-api)
+- [9 — AI Workflows](#9--ai-workflows)
 
 ## Overview
 
@@ -36,6 +38,9 @@
 | [5_RAG_App](5_RAG_App/) | Streamlit app: Q&A over `data/*.md` (sentence chunking, top-8 retrieval). |
 | [6_Agents](6_Agents/) | Function calling, agent loops, RAG as a tool, and a Streamlit agent app with visible reasoning traces. |
 | [7_Evaluations](7_Evaluations/) | Golden datasets, retrieval metrics (precision@k, MRR), LLM-as-judge, and agent routing eval. |
+| [8_OpenAI_API](8_OpenAI_API/) | OpenAI Responses API demos: structured outputs with Pydantic, and stateless vs stateful conversation with a local Ollama model. |
+| [9_AI_Workflows](9_AI_Workflows/) | **Video Content Generator** CLI (chapter folder + `src/` package): narration pipeline with Pydantic, modular layers, API retries, multi-draft guardrail correction, and safe output folders. |
+| [10_AI_Workflow_App](10_AI_Workflow_App/) | **ScriptSprout** — full-stack web app (FastAPI + React): same narration workflow ideas as chapter 9, with persistence, HITL in the UI, semantic search, and admin tooling. Docs: [10_AI_Workflow_App/README.md](10_AI_Workflow_App/README.md) (runnable app in [`ScriptSprout/`](10_AI_Workflow_App/ScriptSprout/)). |
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
 
@@ -162,5 +167,20 @@ Two app variants that demonstrate semantic search and the LLM pipeline.
 - **Notebooks:** Golden dataset construction, retrieval eval (precision@k, recall@k, MRR), generation eval (semantic similarity + LLM-as-judge), agent eval (tool routing accuracy + end-to-end quality).
 - **App:** Streamlit eval harness — select an eval type, run it against the golden dataset, get a scored results dashboard with per-case pass/fail.
 - Reuses the `AI_Agent_Insure.md` document, ChromaDB index, and agent tools from modules 4–6. See [7_Evaluations/README.md](7_Evaluations/README.md).
+
+<p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
+
+## 8 — OpenAI API
+
+[**8_OpenAI_API/**](8_OpenAI_API/) — Focused demos of the OpenAI Responses API and conversation state.
+
+- **[demo/](8_OpenAI_API/demo/)** — Structured output with `responses.parse`: prompts for a story, returns a `StoryResponse` Pydantic model (`title` + `story`). Demonstrates typed structured outputs from the Responses API.
+- **[Stateless_demo/](8_OpenAI_API/Stateless_demo/)** — Two scripts using a local Ollama model via the OpenAI-compatible API (`http://localhost:11434/v1`). `stateless_demo.py` sends each turn independently (no memory); `stateful_demo.py` sends the full message history each turn. Side-by-side illustration of why conversation context matters.
+
+<p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
+
+## 9 — AI Workflows
+
+[**9_AI_Workflows/**](9_AI_Workflows/) — A **Video Content Generator** CLI: synopsis, title, description, full story, guardrails check, and DALL·E 3 thumbnail using the OpenAI API. The project lives in **[`9_AI_Workflows/`](9_AI_Workflows/)** (run **`uv`** there); the Python package is under **`src/`** with Pydantic models, modular boundaries (`api`, `workflow`, `output_bundle`, `story`, etc.), **retries** on transient API errors, **multi-draft** story correction when guardrails fail, and **collision-safe** output folders. See [9_AI_Workflows/README.md](9_AI_Workflows/README.md) and [9_AI_Workflows/MODEL_USAGE_GUIDE.md](9_AI_Workflows/MODEL_USAGE_GUIDE.md).
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>

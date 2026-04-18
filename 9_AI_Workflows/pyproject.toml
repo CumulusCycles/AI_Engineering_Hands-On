@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "video-content-generator"
+version = "0.1.0"
+description = "CLI workflow: synopsis, title, description, story, and thumbnail for video narration"
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=2.29.0",
+    "pydantic>=2.10",
+    "python-dotenv>=1.2.2",
+]
+
+[project.scripts]
+video-content-generator = "video_content_generator.cli:main"
+
+# Package `video_content_generator` maps to files directly under src/
+[tool.setuptools]
+package-dir = { "video_content_generator" = "src" }
+packages = ["video_content_generator"]

@@ -25,6 +25,7 @@
 - [8 — OpenAI API](#8--openai-api)
 - [9 — AI Workflows](#9--ai-workflows)
 - [10 — AI Workflow App](#10--ai-workflow-app)
+- [11 — AI Workflow with Claude Code](#11--ai-workflow-with-claude-code)
 
 ## Overview
 
@@ -42,6 +43,7 @@
 | [8_OpenAI_API](8_OpenAI_API/) | OpenAI Responses API demos: structured outputs with Pydantic, and stateless vs stateful conversation with a local Ollama model. |
 | [9_AI_Workflows](9_AI_Workflows/) | **Video Content Generator** CLI (chapter folder + `src/` package): narration pipeline with Pydantic, modular layers, API retries, multi-draft guardrail correction, and safe output folders. |
 | [10_AI_Workflow_App](10_AI_Workflow_App/) | **ScriptSprout** — full-stack web app (FastAPI + React): same narration workflow ideas as chapter 9, with persistence, HITL in the UI, semantic search, and admin tooling. Docs: [10_AI_Workflow_App/README.md](10_AI_Workflow_App/README.md) (runnable app in [`ScriptSprout/`](10_AI_Workflow_App/ScriptSprout/)). |
+| [11_AI_Workflow_with_Claude_Code](11_AI_Workflow_with_Claude_Code/) | **Claude Code** walkthrough: greenfield full-stack app from **prompts** plus **`docs/`** (requirements + MVP / enhancement slices) and **`designs/`** (UI contract). Shipped artifacts are specs and mockups only until you scaffold the app. See [11_AI_Workflow_with_Claude_Code/README.md](11_AI_Workflow_with_Claude_Code/README.md). |
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
 
@@ -189,5 +191,11 @@ Two app variants that demonstrate semantic search and the LLM pipeline.
 ## 10 — AI Workflow App
 
 [**10_AI_Workflow_App/**](10_AI_Workflow_App/) — **ScriptSprout** in [`ScriptSprout/`](10_AI_Workflow_App/ScriptSprout/): the chapter 9 narration pipeline as a multi-user product (Vite + React, FastAPI, SQLite, ChromaDB, OpenAI). See [10_AI_Workflow_App/README.md](10_AI_Workflow_App/README.md), [10_AI_Workflow_App/ARCHITECTURE.md](10_AI_Workflow_App/ARCHITECTURE.md), and [10_AI_Workflow_App/architecture.html](10_AI_Workflow_App/architecture.html).
+
+<p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
+
+## 11 — AI Workflow with Claude Code
+
+[**11_AI_Workflow_with_Claude_Code/**](11_AI_Workflow_with_Claude_Code/) — **Claude Code** and **prompt-driven** greenfield development: implement from **`docs/`** (requirements + MVP / enhancement slices) and **`designs/`** (UI contract), in milestone order, using modern agentic workflow habits. Chapter folder README: [11_AI_Workflow_with_Claude_Code/README.md](11_AI_Workflow_with_Claude_Code/README.md).
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>

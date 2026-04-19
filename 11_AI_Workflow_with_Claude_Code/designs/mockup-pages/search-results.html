@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>search-results mockup</title>
+  <link rel="stylesheet" href="mockup-base.css" />
+</head>
+<body class="mockup-body">
+  <header class="mockup-topbar">
+    <div class="mockup-brand">
+      <img src="../brand/icon_transparent.png" alt="" />
+      <div>
+        <strong>ScriptSprout</strong>
+        <span>AI authoring workspace</span>
+      </div>
+    </div>
+    <nav class="mockup-nav" aria-label="Primary">
+          <a href="#" class="ghost">Home</a>
+          <a href="#" class="ghost">Admin dashboard</a>
+          <a href="#" class="active">Admin NLP query</a>
+          <span class="user-pill">ScriptSprout-Admin (admin)</span>
+          <button type="button" class="linklike">Logout</button>
+    </nav>
+  </header>
+  <div class="mockup-wrap">
+      <div class="mockup-hero">
+        <img class="hero-mark" src="../brand/icon_transparent.png" alt="" />
+        <h1>From Prompt to YouTube-Ready Story Content</h1>
+        <p>Plant a prompt. Grow a channel-ready story.</p>
+      </div>
+    <main class="mockup-card">
+      <h2>Admin NLP query</h2>
+      <p class="lede">After <strong>Run query</strong>: composed plan, optional metrics, and ranked semantic hits (cross-author scope).</p>
+      <label class="block">Query
+        <textarea rows="3">Show similar stories about a hidden room under a school.</textarea>
+      </label>
+      <button type="button" class="btn-primary" style="width:auto;margin-top:0">Run query</button>
+
+      <h3 class="section-title">Plan summary</h3>
+      <p class="muted">Interpretation: return semantic matches for “hidden room under a school” across all authors’ indexed content, with short previews.</p>
+      <p class="muted">Parse attempts: 1</p>
+
+      <h3 class="section-title">Semantic hits</h3>
+      <p class="muted" style="margin-bottom:10px"><strong>3 results</strong> — ranked by similarity</p>
+      <ul class="result-list">
+        <li><strong>#12</strong> The Flickering Map to the Gym's Hidden Room — An 8-minute adventure story for tweens about two friends who find a map…</li>
+        <li><strong>#08</strong> (untitled) — …map-stone glowed on a crate of yearbooks in the basement…</li>
+        <li><strong>#03</strong> Midnight bus mystery — …secret room beneath the old gym…</li>
+      </ul>
+    </main>
+  </div>
+  <footer class="mockup-footer">ScriptSprout © 2026</footer>
+</body>
+</html>

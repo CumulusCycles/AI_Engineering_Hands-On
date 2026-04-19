@@ -24,6 +24,7 @@
 - [7 — Evaluations](#7--evaluations)
 - [8 — OpenAI API](#8--openai-api)
 - [9 — AI Workflows](#9--ai-workflows)
+- [10 — AI Workflow App](#10--ai-workflow-app)
 
 ## Overview
 

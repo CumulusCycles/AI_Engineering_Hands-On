@@ -215,5 +215,4 @@ Engineering chooses final routes and OpenAPI tags.
 
 | Version | Date | Notes |
 |---------|------|-------|
-| 0.1 | — | Initial technical requirements for greenfield build. |
-| 0.2 | — | Renamed file to `TECHNICAL_REQS.md` (naming convention). |
+| 1.0 | — | Baseline technical requirements (`docs/reqs/TECHNICAL_REQS.md`). |

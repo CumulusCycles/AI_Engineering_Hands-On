@@ -5,7 +5,7 @@ This folder is the **visual source of truth** for the product. **Use this README
 **How this relates to other docs**
 
 - **`COLOR_PALETTE.md`** (in this folder) — exact colors, shadows, and usage rules. **Do not invent colors** outside this palette unless a mockup clearly introduces a one-off exception (then note it in code comments and keep it rare).
-- **`docs/FUNCTIONAL_REQS.md`** — behavior, roles, and acceptance rules. If a mockup and the functional spec disagree on **security or data rules**, the functional spec wins; on **pure layout/visuals**, these designs win.
+- **`docs/reqs/FUNCTIONAL_REQS.md`** — behavior, roles, and acceptance rules. If a mockup and the functional spec disagree on **security or data rules**, the functional spec wins; on **pure layout/visuals**, these designs win.
 - **`mockup-pages/`** — **Canonical screen mockups**: one static **HTML** file per screen/state, plus shared **`mockup-pages/mockup-base.css`**. Read the HTML **and** the CSS to recover structure, hierarchy, spacing, and component patterns. Open files in a browser when you need a pixel-level visual check (shared styles load via relative path from each HTML file).
 - **`brand/`** — **identity assets** used in the shipped app (e.g. logo, favicon, transparent mark). Mockup HTML references these via `../brand/…` when previewing in a browser.
 
@@ -31,7 +31,7 @@ If a listed mockup file is **not present yet**, treat this README as the **namin
 2. Open the **mockup HTML** listed for that feature in the inventory below (`mockup-pages/<basename>.html`). Read **`mockup-pages/mockup-base.css`** for shared tokens and component styling used across pages.
 3. Match **layout, spacing, typography scale, component grouping, and state treatment** (loading / error / empty / success) as shown in the markup and CSS.
 4. Apply colors strictly from **`COLOR_PALETTE.md`** (the mockup CSS is aligned with it).
-5. **Do not** introduce new UI patterns, extra chrome, or alternate flows that are not shown—if something is missing, align with **`docs/FUNCTIONAL_REQS.md`** and ask for a spec update rather than inventing layout.
+5. **Do not** introduce new UI patterns, extra chrome, or alternate flows that are not shown—if something is missing, align with **`docs/reqs/FUNCTIONAL_REQS.md`** and ask for a spec update rather than inventing layout.
 
 Prompts and implementation notes should cite paths under **`designs/mockup-pages/`** (see the inventory below). Each screen/state uses the same **basename** as the inventory row (e.g. `auth-login.html`).
 
@@ -143,5 +143,4 @@ Typical files (names may vary slightly; keep this table aligned with what is che
 
 | Version | Notes |
 |---------|-------|
-| 0.1 | Initial `designs/` README: `brand/`, palette at folder root. |
-| 0.2 | Canonical mockups in **`mockup-pages/`** (HTML + CSS)        |
+| 1.0 | Baseline: **`mockup-pages/`** (HTML + CSS), **`COLOR_PALETTE.md`**, **`brand/`**. |

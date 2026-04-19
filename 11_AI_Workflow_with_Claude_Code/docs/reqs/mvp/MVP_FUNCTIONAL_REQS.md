@@ -55,7 +55,4 @@ All MVP screens MUST follow the **`designs/`** folder at **repository root** (si
 
 | Version | Notes |
 |---------|--------|
-| 0.1 | Initial MVP functional milestone pointer. |
-| 0.2 | Moved under `docs/mvp/`. |
-| 0.3 | Renamed file to `MVP_FUNCTIONAL_REQS.md`; master links use `*_REQS.md`. |
-| 0.4 | Include master §7 (`N-*`) in MVP checklist. |
+| 1.0 | Baseline MVP functional milestone (`docs/reqs/mvp/`). |

@@ -179,5 +179,4 @@ The system MUST enforce that **author** capabilities never operate on another au
 
 | Version | Date | Notes |
 |---------|------|-------|
-| 0.1 | — | Initial functional requirements for greenfield build. |
-| 0.2 | — | Renamed file to `FUNCTIONAL_REQS.md` (naming convention). |
+| 1.0 | — | Baseline functional requirements (`docs/reqs/FUNCTIONAL_REQS.md`). |

@@ -7,7 +7,7 @@
 
 ## Canonical specifications (read these first)
 
-The **full product** intent lives in the master trio (parent `docs/` folder):
+The **full product** intent lives in the master trio in **`docs/reqs/`**:
 
 | Document | Purpose |
 |----------|---------|
@@ -28,9 +28,9 @@ When MVP is done, a **pilot author** can:
 1. **Register and sign in**, stay signed in across refresh until logout or expiry, and **sign out**.
 2. Submit a **structured brief** (subject, genre, audience, length proxy — exact fields follow `designs/`).
 3. Receive a **generated text bundle** for YouTube-style use: at minimum **title**, **description**, and **story** in one operation.
-4. See **loading, error, empty, and success** states for generation and history (aligned with `designs/` and `FUNCTIONAL_REQS.md`).
+4. See **loading, error, empty, and success** states for generation and history (aligned with `designs/` and **`docs/reqs/FUNCTIONAL_REQS.md`**).
 5. **Persist** every item automatically; **reopen** any past item from **their own** history only.
-6. Trust that **no author** can access another author’s items — per **`BUSINESS_REQS.md` §7** (data ownership) and **`BUSINESS_REQS.md` §9** (pilot success: no cross-author data leakage).
+6. Trust that **no author** can access another author’s items — per **`docs/reqs/BUSINESS_REQS.md` §7** (data ownership) and **`docs/reqs/BUSINESS_REQS.md` §9** (pilot success: no cross-author data leakage).
 
 ---
 
@@ -51,7 +51,4 @@ Optional capabilities described in the master docs (email verification, advanced
 
 | Version | Notes |
 |---------|--------|
-| 0.2 | Restructured as milestone pointer + scope; master trio is canonical. |
-| 0.3 | Moved under `docs/mvp/`; enhancements pointers renamed to `ENHANCEMENTS_*`. |
-| 0.4 | Master filenames use `*_REQS.md`; functional slice is `MVP_FUNCTIONAL_REQS.md`. |
-| 0.5 | Outcome #6: cite master business §7 / §9 (not G-2 / P-1). |
+| 1.0 | Baseline MVP business milestone (`docs/reqs/mvp/`). |

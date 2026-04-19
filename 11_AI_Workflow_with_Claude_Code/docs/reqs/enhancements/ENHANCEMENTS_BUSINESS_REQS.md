@@ -38,7 +38,7 @@ Each enhancement MUST respect master **business rules**: ownership, least-privil
 
 ## Explicitly **out of this enhancement track** (unless pulled in later)
 
-Examples called out in the prior standalone enhance doc — **still not required** unless you add a new milestone:
+The following are **still not required** unless you add a new milestone:
 
 - Full **email verification** program  
 - **Rich admin analytics / NLP studio** beyond the shipped **Admin NLP query + dashboards**  
@@ -52,5 +52,4 @@ The **master trio** remains authoritative for anything listed there.
 
 | Version | Notes |
 |---------|--------|
-| 0.2 | Restructured as milestone pointer + enhancement business slice. |
-| 0.3 | Renamed to `ENHANCEMENTS_*`; moved under `docs/enhancements/`. |
+| 1.0 | Baseline post-MVP enhancement business milestone (`docs/reqs/enhancements/`). |

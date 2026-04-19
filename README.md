@@ -43,7 +43,7 @@
 | [8_OpenAI_API](8_OpenAI_API/) | OpenAI Responses API demos: structured outputs with Pydantic, and stateless vs stateful conversation with a local Ollama model. |
 | [9_AI_Workflows](9_AI_Workflows/) | **Video Content Generator** CLI (chapter folder + `src/` package): narration pipeline with Pydantic, modular layers, API retries, multi-draft guardrail correction, and safe output folders. |
 | [10_AI_Workflow_App](10_AI_Workflow_App/) | **ScriptSprout** — full-stack web app (FastAPI + React): same narration workflow ideas as chapter 9, with persistence, HITL in the UI, semantic search, and admin tooling. Docs: [10_AI_Workflow_App/README.md](10_AI_Workflow_App/README.md) (runnable app in [`ScriptSprout/`](10_AI_Workflow_App/ScriptSprout/)). |
-| [11_AI_Workflow_with_Claude_Code](11_AI_Workflow_with_Claude_Code/) | **Claude Code** walkthrough: greenfield full-stack app from **prompts** plus **`docs/`** (requirements + MVP / enhancement slices) and **`designs/`** (UI contract). Shipped artifacts are specs and mockups only until you scaffold the app. See [11_AI_Workflow_with_Claude_Code/README.md](11_AI_Workflow_with_Claude_Code/README.md). |
+| [11_AI_Workflow_with_Claude_Code](11_AI_Workflow_with_Claude_Code/) | **Claude Code** walkthrough: greenfield full-stack app from **prompts** plus **`docs/`** ([`docs/README.md`](11_AI_Workflow_with_Claude_Code/docs/README.md), master specs and milestone slices under **`docs/reqs/`** — **`docs/reqs/mvp/`**, **`docs/reqs/enhancements/`**) and **`designs/`** (UI contract). Shipped artifacts are specs and mockups only until you scaffold the app. See [11_AI_Workflow_with_Claude_Code/README.md](11_AI_Workflow_with_Claude_Code/README.md). |
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>
 
@@ -196,6 +196,6 @@ Two app variants that demonstrate semantic search and the LLM pipeline.
 
 ## 11 — AI Workflow with Claude Code
 
-[**11_AI_Workflow_with_Claude_Code/**](11_AI_Workflow_with_Claude_Code/) — **Claude Code** and **prompt-driven** greenfield development: implement from **`docs/`** (requirements + MVP / enhancement slices) and **`designs/`** (UI contract), in milestone order, using modern agentic workflow habits. Chapter folder README: [11_AI_Workflow_with_Claude_Code/README.md](11_AI_Workflow_with_Claude_Code/README.md).
+[**11_AI_Workflow_with_Claude_Code/**](11_AI_Workflow_with_Claude_Code/) — **Claude Code** and **prompt-driven** greenfield development: implement from **`docs/`** ([`docs/README.md`](11_AI_Workflow_with_Claude_Code/docs/README.md), **`docs/reqs/`** including **`docs/reqs/mvp/`** and **`docs/reqs/enhancements/`**) and **`designs/`** (UI contract), in milestone order, using modern agentic workflow habits. Chapter folder README: [11_AI_Workflow_with_Claude_Code/README.md](11_AI_Workflow_with_Claude_Code/README.md).
 
 <p align="right"><a href="#table-of-contents" style="font-size: 0.85em;">↑ toc</a></p>

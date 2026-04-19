@@ -105,5 +105,4 @@ This document states **outcomes and constraints**. **Functional behavior** is sp
 
 | Version | Date | Notes |
 |---------|------|-------|
-| 0.1 | — | Initial business requirements for greenfield build. |
-| 0.2 | — | Renamed file to `BUSINESS_REQS.md` (naming convention). |
+| 1.0 | — | Baseline business requirements (`docs/reqs/BUSINESS_REQS.md`). |

@@ -37,7 +37,7 @@
 Items intentionally **not** part of the default E1–E5 teaching track (see master **§8** and enhancements business doc):
 
 - Public discovery, billing, collaborative editing, etc.  
-- **Email verification** as a full program (**§4.1 A-5**) if you skipped it in MVP — add only when spec’d.  
+- **Email verification** as a full program (**§4.1 A-5**) when it was outside the MVP slice — add only when spec’d.  
 - **Destructive admin** / **cleanse** (**§5 X-1**) — only with explicit business + technical gating.
 
 ---
@@ -52,6 +52,4 @@ Enhancement screens MUST follow the **`designs/`** folder at **repository root**
 
 | Version | Notes |
 |---------|--------|
-| 0.1 | Initial enhancement functional milestone pointer. |
-| 0.2 | Renamed to `ENHANCEMENTS_*`; moved under `docs/enhancements/`. |
-| 0.3 | Renamed file to `ENHANCEMENTS_FUNCTIONAL_REQS.md`; master links use `*_REQS.md`. |
+| 1.0 | Baseline post-MVP enhancement functional milestone (`docs/reqs/enhancements/`). |

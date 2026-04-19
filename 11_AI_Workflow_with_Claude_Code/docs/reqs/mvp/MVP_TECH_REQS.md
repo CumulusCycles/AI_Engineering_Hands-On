@@ -13,7 +13,7 @@
 | [`../FUNCTIONAL_REQS.md`](../FUNCTIONAL_REQS.md) | All **observable** behavior the system must meet |
 | [`../BUSINESS_REQS.md`](../BUSINESS_REQS.md) | Why the system exists and what “done” means for the business |
 
-**This file does not replace `TECHNICAL_REQS.md`.** It scopes **MVP engineering only**: what to build first, which env vars you need at minimum, and what **must not** appear yet.
+**This file does not replace [`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md).** It scopes **MVP engineering only**: what to build first, which env vars you need at minimum, and what **must not** appear yet.
 
 **MVP functional slice:** [`MVP_FUNCTIONAL_REQS.md`](./MVP_FUNCTIONAL_REQS.md)
 
@@ -23,17 +23,17 @@
 
 ### Stack (MVP)
 
-Per master **`TECHNICAL_REQS.md` §2** — MVP MUST use:
+Per master **[`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md) §2** — MVP MUST use:
 
 - **Backend:** Python, **FastAPI**, **SQLAlchemy**, **SQLite**, Pydantic settings  
 - **Frontend:** **React**, **TypeScript**, **Vite**  
 - **Auth:** **Server-side sessions** + **HTTP-only** session cookie  
 - **AI:** OpenAI (or compatible) via official SDK; **single** text generation path acceptable for “title + description + story” in MVP  
-- **Layout:** **Milestone / repo convention** (not prescribed in master `TECHNICAL_REQS.md`): monorepo with **`backend/`** and **`frontend/`** as siblings — keep unless the master doc or team explicitly changes it
+- **Layout:** **Milestone / repo convention** (not prescribed in master [`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md)): monorepo with **`backend/`** and **`frontend/`** as siblings — keep unless the master doc or team explicitly changes it
 
 ### Architecture (MVP)
 
-Follow master **`TECHNICAL_REQS.md` §3–5** in full: thin routes, services, repos/schemas, **shared** auth + **ownership** dependencies, AI calls isolated with logging.
+Follow master **[`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md) §3–5** in full: thin routes, services, repos/schemas, **shared** auth + **ownership** dependencies, AI calls isolated with logging.
 
 ### Data (MVP minimum)
 
@@ -52,7 +52,7 @@ MVP MUST expose **grouped HTTP resources** under a stable prefix (master **§4**
 - **Content:** create item, **run generation** (returns or persists title/description/story), **list mine**, **get one** (ownership enforced)
 - **Health:** liveness for local dev / ops
 
-Exact path strings and OpenAPI layout are **implementation choices** as long as **`FUNCTIONAL_REQS.md`** behaviors hold.
+Exact path strings and OpenAPI layout are **implementation choices** as long as **[`../FUNCTIONAL_REQS.md`](../FUNCTIONAL_REQS.md)** behaviors hold.
 
 ### AI (MVP)
 
@@ -99,7 +99,7 @@ Load from **`.env`** at project root (never commit secrets). Names are **illustr
 
 ## Quality bar (MVP)
 
-Per master **`TECHNICAL_REQS.md` §14** — at minimum:
+Per master **[`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md) §14** — at minimum:
 
 - Backend: happy path + **401** without session + **ownership** denial  
 - Frontend: generation flow **loading / error / success**, history **empty** state  
@@ -111,7 +111,4 @@ Per master **`TECHNICAL_REQS.md` §14** — at minimum:
 
 | Version | Notes |
 |---------|--------|
-| 0.2 | Restructured as milestone pointer + MVP engineering slice. |
-| 0.3 | Moved under `docs/mvp/`; enhancements pointer renamed to `ENHANCEMENTS_*`. |
-| 0.4 | Master filenames use `*_REQS.md`; functional slice is `MVP_FUNCTIONAL_REQS.md`. |
-| 0.5 | Clarify monorepo layout as milestone convention vs master `TECHNICAL_REQS.md`. |
+| 1.0 | Baseline MVP technical milestone (`docs/reqs/mvp/`). |

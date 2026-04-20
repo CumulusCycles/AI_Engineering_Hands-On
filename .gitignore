@@ -356,6 +356,9 @@ conda-meta/
 .mypy_cache/
 .ruff_cache/
 
+# Module 11 — local docs/claude folder (not tracked)
+11_AI_Workflow_with_Claude_Code/docs/claude/
+
 # Additional AI/ML Tools
 .anthropic/
 anthropic_cache/

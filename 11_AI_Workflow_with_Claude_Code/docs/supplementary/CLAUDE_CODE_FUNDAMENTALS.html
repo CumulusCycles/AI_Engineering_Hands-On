@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code Fundamentals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+  />
+  <style>
+    :root {
+      --bg: #f7f7fb;
+      --surface: #ffffff;
+      --surface-alt: #eef0f9;
+      --ink: #14132c;
+      --ink-muted: #4c4a66;
+      --ink-subtle: #8481a0;
+      --border: #e1e0ee;
+      --border-strong: #c7c5dc;
+      --accent: #4f46e5;
+      --accent-deep: #3730a3;
+      --accent-soft: #eef2ff;
+      --accent-tint: #c7d2fe;
+      --warn: #b45309;
+      --warn-soft: #fef3c7;
+      --good: #047857;
+      --good-soft: #d1fae5;
+      --code-bg: #1b1a33;
+      --code-ink: #e6e3f5;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 1px 2px rgba(20, 10, 40, 0.04);
+      --shadow-md: 0 8px 24px -8px rgba(20, 10, 40, 0.14);
+      --shadow-lg: 0 24px 48px -16px rgba(20, 10, 40, 0.18);
+      --font-serif: "Fraunces", Georgia, serif;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Hero ---------------------------------------------------------- */
+    .hero {
+      position: relative;
+      padding: 96px 32px 72px;
+      background: linear-gradient(
+          135deg,
+          var(--accent-soft) 0%,
+          var(--bg) 65%
+        ),
+        radial-gradient(
+          circle at 85% 15%,
+          var(--accent-tint) 0%,
+          transparent 55%
+        );
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 580px;
+      height: 580px;
+      background: radial-gradient(
+        circle,
+        var(--accent-tint) 0%,
+        transparent 70%
+      );
+      opacity: 0.55;
+      z-index: 0;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 960px;
+      margin: 0 auto;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 24px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(4px);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-deep);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--accent-tint);
+    }
+
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: clamp(40px, 6vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin: 0 0 20px;
+      color: var(--ink);
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      font-weight: 500;
+      color: var(--accent-deep);
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(20px, 2.2vw, 24px);
+      line-height: 1.5;
+      color: var(--ink-muted);
+      margin: 0 0 32px;
+      max-width: 720px;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    .hero-meta strong {
+      display: block;
+      color: var(--ink);
+      font-weight: 600;
+      margin-bottom: 2px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Main layout --------------------------------------------------- */
+    .layout {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 56px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 32px 120px;
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    /* TOC ----------------------------------------------------------- */
+    .toc {
+      position: sticky;
+      top: 32px;
+      align-self: start;
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
+      padding: 4px 4px 24px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 960px) {
+      .toc {
+        position: static;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 20px 24px;
+      }
+    }
+
+    .toc-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-subtle);
+      margin-bottom: 12px;
+    }
+
+    .toc ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      counter-reset: toc;
+    }
+
+    .toc li {
+      counter-increment: toc;
+      margin-bottom: 2px;
+    }
+
+    .toc a {
+      display: flex;
+      gap: 10px;
+      padding: 7px 10px;
+      color: var(--ink-muted);
+      text-decoration: none;
+      border-radius: 6px;
+      line-height: 1.4;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .toc a:hover {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .toc a::before {
+      content: counter(toc, decimal-leading-zero);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-subtle);
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    /* Article ------------------------------------------------------- */
+    article {
+      min-width: 0;
+    }
+
+    article section {
+      margin-bottom: 64px;
+      scroll-margin-top: 32px;
+    }
+
+    .section-num {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent-deep);
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    article h2 {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 32px;
+      line-height: 1.18;
+      letter-spacing: -0.015em;
+      margin: 0 0 18px;
+      color: var(--ink);
+    }
+
+    article h3 {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      font-size: 21px;
+      line-height: 1.3;
+      margin: 36px 0 12px;
+      color: var(--ink);
+    }
+
+    article h4 {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-deep);
+      margin: 24px 0 10px;
+    }
+
+    article p {
+      margin: 0 0 18px;
+    }
+
+    article strong {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    article em {
+      font-style: italic;
+    }
+
+    article ul,
+    article ol {
+      padding-left: 26px;
+      margin: 0 0 18px;
+    }
+
+    article li {
+      margin-bottom: 6px;
+    }
+
+    article li::marker {
+      color: var(--accent);
+    }
+
+    article a {
+      color: var(--accent-deep);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 1.5px;
+      transition: color 0.15s;
+    }
+
+    article a:hover {
+      color: var(--ink);
+    }
+
+    /* Lead ---------------------------------------------------------- */
+    .lead {
+      font-family: var(--font-serif);
+      font-size: 21px;
+      font-weight: 400;
+      line-height: 1.55;
+      color: var(--ink-muted);
+      border-left: 3px solid var(--accent);
+      padding-left: 24px;
+      margin-bottom: 48px;
+    }
+
+    /* Tables -------------------------------------------------------- */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14.5px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--surface-alt);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-muted);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: var(--accent-soft);
+    }
+
+    td:first-child {
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    /* Code ---------------------------------------------------------- */
+    pre {
+      background: var(--code-bg) !important;
+      color: var(--code-ink);
+      font-family: var(--font-mono) !important;
+      font-size: 13px !important;
+      line-height: 1.65 !important;
+      padding: 20px 22px !important;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin: 16px 0 20px;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.9em;
+      background: var(--surface-alt);
+      color: var(--accent-deep);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    /* Callout ------------------------------------------------------- */
+    .callout {
+      display: grid;
+      grid-template-columns: 40px 1fr;
+      gap: 14px;
+      padding: 18px 22px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-tint);
+      border-radius: var(--radius);
+      margin: 20px 0;
+    }
+
+    .callout .icon {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 1;
+      color: var(--accent-deep);
+    }
+
+    .callout p {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .callout.warn {
+      background: var(--warn-soft);
+      border-color: #fcd34d;
+    }
+
+    .callout.warn .icon {
+      color: var(--warn);
+    }
+
+    /* Compare (chat vs code) --------------------------------------- */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    @media (max-width: 720px) {
+      .compare {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-col {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+
+    .compare-col .label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      margin-bottom: 8px;
+    }
+
+    .compare-col h4 {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ink);
+      text-transform: none;
+      letter-spacing: 0;
+      margin: 0 0 8px;
+    }
+
+    .compare-col p {
+      font-size: 14px;
+      margin: 0;
+      color: var(--ink-muted);
+    }
+
+    /* Pill badges -------------------------------------------------- */
+    .pill {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      background: var(--surface-alt);
+      color: var(--ink-muted);
+      border: 1px solid var(--border);
+    }
+
+    .pill.highest {
+      background: var(--ink);
+      color: var(--accent-tint);
+      border-color: var(--ink);
+    }
+
+    .pill.accent {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      border-color: var(--accent-tint);
+    }
+
+    /* Precedence stack --------------------------------------------- */
+    .stack-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+      counter-reset: stack;
+    }
+
+    .stack-list li {
+      counter-increment: stack;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 6px;
+      border-radius: var(--radius);
+      font-size: 15px;
+    }
+
+    .stack-list li::before {
+      content: counter(stack);
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stack-list li:first-child {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .stack-list li:first-child::before {
+      background: var(--ink);
+    }
+
+    /* Divider ------------------------------------------------------- */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 48px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--ink-subtle);
+      text-transform: uppercase;
+    }
+
+    /* Footer -------------------------------------------------------- */
+    footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 32px 80px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--ink-subtle);
+      text-align: center;
+    }
+
+    /* Docs link table style ---------------------------------------- */
+    .docs-table td:last-child a {
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Supplementary Resource · Foundations</p>
+      <h1>Claude Code <em>Fundamentals</em></h1>
+      <p class="hero-subtitle">
+        A learning-ordered tour of the concepts that make Claude Code more
+        than just chat with file access — memory, permissions, rules, skills,
+        subagents, MCP, and hooks.
+      </p>
+      <div class="hero-meta">
+        <div>
+          <strong>Ordering</strong>
+          Each section assumes the ones before it
+        </div>
+        <div>
+          <strong>Authority</strong>
+          Official docs linked in §&nbsp;17
+        </div>
+        <div>
+          <strong>Read time</strong>
+          ~25 minutes
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <div class="toc-label">Contents</div>
+      <ol>
+        <li><a href="#what">What is Claude Code?</a></li>
+        <li><a href="#vs-chat">Claude Code vs. Claude.ai Chat</a></li>
+        <li><a href="#billing">Consumer Plans vs. API Billing</a></li>
+        <li><a href="#mental-model">Mental Model: One Session at a Time</a></li>
+        <li><a href="#memory">Two Kinds of Memory</a></li>
+        <li><a href="#claude-md">CLAUDE.md: Location &amp; Stacking</a></li>
+        <li><a href="#claude-dir">The .claude/ Directory</a></li>
+        <li><a href="#rules">Rules</a></li>
+        <li><a href="#settings">Settings &amp; Permissions</a></li>
+        <li><a href="#skills">Skills &amp; Commands</a></li>
+        <li><a href="#subagents">Subagents</a></li>
+        <li><a href="#output-styles">Output Styles</a></li>
+        <li><a href="#mcp">MCP Servers</a></li>
+        <li><a href="#hooks">Hooks</a></li>
+        <li><a href="#plugins">Plugins &amp; Marketplaces</a></li>
+        <li><a href="#advanced">Scheduling, CI/CD, Headless</a></li>
+        <li><a href="#docs">Official Documentation</a></li>
+      </ol>
+    </aside>
+
+    <article>
+      <p class="lead">
+        This guide is ordered for learning: each section assumes you
+        understand the ones before it. For authoritative, up-to-date detail
+        on install paths, every <code>settings.json</code> key, and policy
+        behavior, refer to the official documentation linked at the end.
+      </p>
+
+      <!-- 1 -->
+      <section id="what">
+        <span class="section-num">§ 01</span>
+        <h2>What is Claude Code?</h2>
+        <p>
+          Claude Code is an <strong>agentic coding tool</strong> that reads
+          your codebase, edits files, runs commands, and integrates with
+          your development tools. It understands your entire codebase and
+          can work across multiple files and tools to get things done —
+          building features, fixing bugs, automating development tasks, and
+          more.
+        </p>
+        <p>
+          You can run it in several <strong>surfaces</strong>: terminal CLI,
+          VS Code extension, JetBrains plugin, desktop app, and browser
+          (including the Claude iOS app). The same core concepts —
+          permissions, <code>CLAUDE.md</code>, MCP, hooks — apply across
+          surfaces because they share the same underlying engine.
+        </p>
+
+        <h3>Installation (CLI)</h3>
+        <p>The quickest way to get started:</p>
+        <pre><code class="language-bash"># macOS, Linux, or WSL
+curl -fsSL https://claude.ai/install.sh | bash
+
+# Windows PowerShell
+irm https://claude.ai/install.ps1 | iex</code></pre>
+        <p>Then start Claude Code in any project:</p>
+        <pre><code class="language-bash">cd your-project
+claude</code></pre>
+        <p>
+          You'll be prompted to log in on first use. Native installs
+          auto-update in the background. See the
+          <a href="https://code.claude.com/docs/en/quickstart">official quickstart</a>
+          for Homebrew, WinGet, and other install options.
+        </p>
+      </section>
+
+      <!-- 2 -->
+      <section id="vs-chat">
+        <span class="section-num">§ 02</span>
+        <h2>How Claude Code Differs from Claude.ai Chat</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Claude.ai (browser chat)</th>
+                <th>Claude Code</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Primary unit of work</td>
+                <td>Conversation</td>
+                <td>Tasks in a codebase</td>
+              </tr>
+              <tr>
+                <td>Repository access</td>
+                <td>You paste or upload context; no automatic repo reading</td>
+                <td>Reads files from disk (within allowed permissions)</td>
+              </tr>
+              <tr>
+                <td>Execution</td>
+                <td>Suggests text; you copy changes manually</td>
+                <td>Edits files, runs tests, drives git, calls MCP tools</td>
+              </tr>
+              <tr>
+                <td>Persistence</td>
+                <td>Thread history; re-explain each new thread</td>
+                <td><code>CLAUDE.md</code>, rules, auto memory reload each session</td>
+              </tr>
+              <tr>
+                <td>Risk profile</td>
+                <td>Lower direct impact on disk</td>
+                <td>Higher — treat it like a junior dev with shell access</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="compare">
+          <div class="compare-col">
+            <div class="label">Use chat for</div>
+            <h4>Open-ended thinking</h4>
+            <p>
+              Drafts, exploratory questions, learning. Low impact, high
+              iteration speed, no disk writes.
+            </p>
+          </div>
+          <div class="compare-col">
+            <div class="label">Use Claude Code for</div>
+            <h4>Verified software change</h4>
+            <p>
+              Outcome is a commit, a passing test, or a PR. Changes land in
+              your project tree and are reviewed like any other diff.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section id="billing">
+        <span class="section-num">§ 03</span>
+        <h2>Consumer Plans vs. API Billing</h2>
+        <p>
+          Anthropic offers <strong>consumer Claude</strong> as named plans
+          (for example <strong>Free</strong>, <strong>Pro</strong>, and
+          <strong>Max</strong>): you pay a predictable subscription per
+          person, or start on the free tier. Claude.ai chat and Claude Code
+          are both surfaces on that same subscription — not separately
+          metered products. Moving to a higher tier generally means more
+          headroom: higher usage limits, broader model access, and
+          additional features.
+        </p>
+        <p>
+          <strong>API access</strong> (via Anthropic Console or an
+          enterprise agreement) is billed <strong>on demand</strong>: cost
+          tracks how much the system actually runs, typically token-shaped
+          usage for model calls, often plus separate charges for platform
+          capabilities (tools, batch, caching, and similar). There is no
+          Free/Pro/Max label on an API invoice — you think in terms of
+          projects, API keys, budgets, and spend that scales with traffic.
+        </p>
+        <p>
+          Claude Code can authenticate through <strong>subscription</strong>
+          paths (sign in with your Claude.ai account) or
+          <strong>Console/API</strong> paths depending on how you configure
+          the tool. The economic model — flat subscription vs. metered —
+          follows that choice.
+        </p>
+        <div class="callout">
+          <div class="icon">i</div>
+          <p>
+            Current plan names, inclusions, and API meter details change
+            over time. See
+            <a href="https://www.claude.com/pricing">Claude pricing</a> and
+            <a href="https://platform.claude.com/docs/en/about-claude/pricing">API pricing</a>
+            for the latest.
+          </p>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section id="mental-model">
+        <span class="section-num">§ 04</span>
+        <h2>Mental Model: One Session at a Time</h2>
+        <p>
+          Each Claude Code session starts with a
+          <strong>fresh context window</strong>. Anything not loaded from
+          disk — instructions, settings, retrieved files — is gone when the
+          session ends.
+        </p>
+        <p>
+          This is why the product relies on <strong>files on disk</strong>
+          for things you want every time: <code>CLAUDE.md</code>,
+          <code>.claude/settings.json</code>, rules, skills, hooks, and
+          MCP configuration. These reload automatically at the start of
+          every session.
+        </p>
+      </section>
+
+      <!-- 5 -->
+      <section id="memory">
+        <span class="section-num">§ 05</span>
+        <h2>Two Kinds of Memory</h2>
+        <p>
+          Claude Code has two complementary memory systems. Both load at
+          the start of every conversation:
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>CLAUDE.md files</th>
+                <th>Auto memory</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Who writes it</td>
+                <td>You</td>
+                <td>Claude</td>
+              </tr>
+              <tr>
+                <td>What it contains</td>
+                <td>Instructions and rules</td>
+                <td>Learnings and patterns</td>
+              </tr>
+              <tr>
+                <td>Scope</td>
+                <td>Project, user, or org</td>
+                <td>Per working tree</td>
+              </tr>
+              <tr>
+                <td>Use for</td>
+                <td>Coding standards, workflows, architecture</td>
+                <td>Build commands, debugging insights, preferences Claude discovers</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          <strong><code>CLAUDE.md</code> (and rules):</strong> You write
+          stable instructions — stack conventions, build commands,
+          architecture decisions, review checklists. Keep it under 200
+          lines per file; longer files consume more context and reduce how
+          reliably Claude follows them.
+        </p>
+        <p>
+          <strong>Auto memory:</strong> Claude may write compact learnings
+          across sessions (for example, commands that worked, debugging
+          notes). It stores these in
+          <code>~/.claude/projects/&lt;project&gt;/memory/</code>. You can
+          toggle it on or off via <code>/memory</code> in a session, or by
+          setting <code>autoMemoryEnabled</code> in your settings. Requires
+          Claude Code v2.1.59 or later.
+        </p>
+        <div class="callout warn">
+          <div class="icon">!</div>
+          <p>
+            <strong>Important:</strong> <code>CLAUDE.md</code> content is
+            delivered as a user message, not as an enforced system prompt.
+            Claude reads it and tries to follow it, but it is not a hard
+            enforcement layer. For hard limits (deny reading secrets, block
+            shell patterns), use
+            <strong>permissions in <code>settings.json</code></strong> —
+            not prose alone.
+          </p>
+        </div>
+      </section>
+
+      <!-- 6 -->
+      <section id="claude-md">
+        <span class="section-num">§ 06</span>
+        <h2><code>CLAUDE.md</code>: Where It Lives and How It Stacks</h2>
+        <p>
+          <code>CLAUDE.md</code> files can live in several locations, each
+          with a different scope. All discovered files are
+          <strong>concatenated into context</strong> — they don't override
+          each other. More specific locations are appended later, so they
+          read last at that level.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Scope</th>
+                <th>Location</th>
+                <th>Purpose</th>
+                <th>Shared with</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Managed (enterprise)</td>
+                <td>
+                  macOS: <code>/Library/Application Support/ClaudeCode/CLAUDE.md</code><br />
+                  Linux/WSL: <code>/etc/claude-code/CLAUDE.md</code><br />
+                  Windows: <code>C:\Program Files\ClaudeCode\CLAUDE.md</code>
+                </td>
+                <td>Org-wide policy; cannot be excluded by individual settings</td>
+                <td>All users in the organization</td>
+              </tr>
+              <tr>
+                <td>Project (team)</td>
+                <td><code>./CLAUDE.md</code> or <code>./.claude/CLAUDE.md</code></td>
+                <td>Shared project norms (commit to git)</td>
+                <td>Team via source control</td>
+              </tr>
+              <tr>
+                <td>User (personal, all repos)</td>
+                <td><code>~/.claude/CLAUDE.md</code></td>
+                <td>Your personal defaults everywhere</td>
+                <td>Just you</td>
+              </tr>
+              <tr>
+                <td>Local (personal, this repo only)</td>
+                <td><code>./CLAUDE.local.md</code></td>
+                <td>Per-project personal preferences; add to <code>.gitignore</code></td>
+                <td>Just you</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Loading order</h4>
+        <p>
+          Claude walks up the directory tree from your working directory,
+          loading <code>CLAUDE.md</code> and <code>CLAUDE.local.md</code>
+          from each level. Files in subdirectories load on demand when
+          Claude reads files in those directories.
+        </p>
+
+        <h4>Monorepos</h4>
+        <p>
+          If other teams' <code>CLAUDE.md</code> files are getting picked
+          up and creating noise, use the <code>claudeMdExcludes</code>
+          setting to skip them by path or glob pattern. Add it to
+          <code>.claude/settings.local.json</code> so the exclusion stays
+          local to your machine:
+        </p>
+        <pre><code class="language-json">{
+  "claudeMdExcludes": [
+    "**/other-team/CLAUDE.md"
+  ]
+}</code></pre>
+
+        <h4>Imports</h4>
+        <p>
+          <code>CLAUDE.md</code> can pull in other files using
+          <code>@path/to/file</code> syntax. Both relative and absolute
+          paths are supported. Imports recurse up to a depth of five hops —
+          avoid building deep chains. Example:
+        </p>
+        <pre><code class="language-markdown">See @README for project overview and @package.json for available npm commands.</code></pre>
+
+        <h4><code>AGENTS.md</code> compatibility</h4>
+        <p>
+          Claude Code reads <code>CLAUDE.md</code>, not
+          <code>AGENTS.md</code>. If your repository already uses
+          <code>AGENTS.md</code> for other coding agents, create a
+          <code>CLAUDE.md</code> that imports it so both tools read the
+          same instructions:
+        </p>
+        <pre><code class="language-markdown">@AGENTS.md
+
+## Claude Code
+
+Use plan mode for changes under `src/billing/`.</code></pre>
+
+        <h4>Bootstrap</h4>
+        <p>
+          Run <code>/init</code> to generate a starting
+          <code>CLAUDE.md</code> from your repo. Claude analyzes your
+          codebase and creates a file with build commands, test
+          instructions, and discovered conventions. Refine it by hand
+          afterward.
+        </p>
+      </section>
+
+      <!-- 7 -->
+      <section id="claude-dir">
+        <span class="section-num">§ 07</span>
+        <h2>The <code>.claude/</code> Directory (Project Brain)</h2>
+        <p>
+          Think of <strong><code>.claude/</code></strong> as the
+          <strong>project-local control plane</strong>: files your team
+          commits so everyone gets consistent behavior.
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Path</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>.claude/settings.json</code></td>
+                <td>Shared JSON settings: permissions, hooks, model defaults — team scope; commit to git</td>
+              </tr>
+              <tr>
+                <td><code>.claude/settings.local.json</code></td>
+                <td>Your personal overrides for this repo; Claude auto-configures git to ignore this file</td>
+              </tr>
+              <tr>
+                <td><code>.claude/CLAUDE.md</code></td>
+                <td>Alternative location for the main project instruction file (equivalent to root <code>CLAUDE.md</code>)</td>
+              </tr>
+              <tr>
+                <td><code>.claude/rules/</code></td>
+                <td>Modular instruction files; optional path scoping via YAML frontmatter</td>
+              </tr>
+              <tr>
+                <td><code>.claude/agents/</code></td>
+                <td>Project subagents: markdown files with YAML frontmatter (prompt + tool policy)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          <strong>User-wide equivalents</strong> live under
+          <code>~/.claude/</code> — for example
+          <code>~/.claude/settings.json</code>,
+          <code>~/.claude/agents/</code>, <code>~/.claude/rules/</code>.
+        </p>
+        <p>
+          <strong>MCP servers</strong> for the project are defined in a
+          separate <code>.mcp.json</code> file at the project root (not
+          inside <code>.claude/</code>). User-level MCP configs and
+          per-project state are stored in <code>~/.claude.json</code>.
+        </p>
+      </section>
+
+      <!-- 8 -->
+      <section id="rules">
+        <span class="section-num">§ 08</span>
+        <h2>Rules: <code>.claude/rules/</code></h2>
+        <p>
+          When <code>CLAUDE.md</code> grows large, split topics into
+          <code>.claude/rules/*.md</code>. Files are discovered
+          recursively, so you can use subdirectories like
+          <code>frontend/</code> or <code>backend/</code>.
+        </p>
+        <ul>
+          <li>
+            <strong>Always-on rules:</strong> Markdown files
+            <em>without</em> path frontmatter load for the whole project at
+            session start, same priority as <code>.claude/CLAUDE.md</code>.
+          </li>
+          <li>
+            <strong>Path-scoped rules:</strong> YAML frontmatter with a
+            <code>paths</code> glob list loads the rule only when Claude is
+            working with matching files — useful for keeping API guidance
+            near the API code:
+          </li>
+        </ul>
+        <pre><code class="language-yaml">---
+paths:
+  - "src/api/**/*.ts"
+---
+
+# API Development Rules
+
+- All endpoints must include input validation
+- Use the standard error response format</code></pre>
+        <p>
+          Path-scoped rules trigger when Claude reads matching files, not
+          on every tool use. This saves context and keeps rules relevant.
+        </p>
+        <p>
+          <strong>Sharing rules:</strong> <code>.claude/rules/</code>
+          supports symlinks, so you can maintain a shared set of rules and
+          link them into multiple projects.
+        </p>
+        <p>
+          <strong>User-level rules</strong> in <code>~/.claude/rules/</code>
+          apply to every project on your machine. Project rules take
+          precedence over user rules when they conflict.
+        </p>
+      </section>
+
+      <!-- 9 -->
+      <section id="settings">
+        <span class="section-num">§ 09</span>
+        <h2>Settings Scopes and Permissions (Safety Layer)</h2>
+        <p>
+          <code>settings.json</code> files are the structured enforcement
+          layer — complementing the prose in <code>CLAUDE.md</code>.
+        </p>
+
+        <h4>Precedence (highest wins)</h4>
+        <ol class="stack-list">
+          <li>Managed settings <span class="pill highest">deployed by IT · cannot be overridden</span></li>
+          <li>Command line arguments <span class="pill">session override</span></li>
+          <li>Local <code>.claude/settings.local.json</code></li>
+          <li>Project <code>.claude/settings.json</code></li>
+          <li>User <code>~/.claude/settings.json</code></li>
+        </ol>
+
+        <p>
+          Array-valued settings (like <code>permissions.allow</code>) are
+          <strong>concatenated and deduplicated</strong> across scopes —
+          not replaced. A lower-priority scope can safely add entries
+          without overriding higher-priority ones.
+        </p>
+
+        <h4>Permissions</h4>
+        <p>Control exactly which tools and shell patterns Claude can use:</p>
+        <pre><code class="language-json">{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run test *)"
+    ],
+    "deny": [
+      "Bash(curl *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)"
+    ]
+  }
+}</code></pre>
+        <p>
+          Rules are evaluated in order: <code>deny</code> first, then
+          <code>ask</code>, then <code>allow</code>. The first matching
+          rule wins.
+        </p>
+
+        <h4>Default permission modes</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Mode</th>
+                <th>Behavior</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>default</code></td>
+                <td>Standard permission checking with prompts</td>
+              </tr>
+              <tr>
+                <td><code>acceptEdits</code></td>
+                <td>Auto-accept file edits for paths in the working directory</td>
+              </tr>
+              <tr>
+                <td><code>auto</code></td>
+                <td>A background classifier reviews commands automatically</td>
+              </tr>
+              <tr>
+                <td><code>bypassPermissions</code></td>
+                <td>Skip permission prompts entirely (use with caution)</td>
+              </tr>
+              <tr>
+                <td><code>plan</code></td>
+                <td>Read-only exploration mode</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Interactive configuration is available via
+          <strong><code>/config</code></strong> in the CLI. Run
+          <strong><code>/status</code></strong> to see which settings
+          sources are active and where they come from.
+        </p>
+      </section>
+
+      <!-- 10 -->
+      <section id="skills">
+        <span class="section-num">§ 10</span>
+        <h2>Skills and Custom Commands (Repeatable Workflows)</h2>
+        <p>
+          <strong>Skills</strong> package procedures your team repeats:
+          release checklists, database migration policies, incident triage
+          steps. They are stored as markdown files and can be invoked with
+          a <code>/command</code>-style name, or loaded automatically by
+          Claude when relevant to the prompt.
+        </p>
+        <p>
+          Skills differ from <code>CLAUDE.md</code> in an important way:
+          they load <em>on demand</em> rather than into every session's
+          context. Use skills for long playbooks; keep
+          <code>CLAUDE.md</code> short and factual.
+        </p>
+        <p>
+          Skills can also be run inside a subagent's isolated context —
+          useful when you want a procedure to execute without polluting
+          your main conversation.
+        </p>
+        <p>
+          See the official
+          <a href="https://code.claude.com/docs/en/skills">Skills documentation</a>
+          for file layout and invocation syntax.
+        </p>
+      </section>
+
+      <!-- 11 -->
+      <section id="subagents">
+        <span class="section-num">§ 11</span>
+        <h2>Subagents</h2>
+        <p>
+          <strong>Subagents</strong> are specialized AI assistants that
+          handle specific types of tasks in their own isolated context
+          window. When a side task would flood your main conversation with
+          search results, logs, or file contents you won't reference
+          again, a subagent handles that work and returns only a summary.
+        </p>
+
+        <p>Each subagent has:</p>
+        <ul>
+          <li>A custom system prompt</li>
+          <li>Its own tool restrictions</li>
+          <li>Independent permissions</li>
+          <li>Optionally, a different model</li>
+        </ul>
+
+        <h3>Built-in subagents</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Subagent</th>
+                <th>Model</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Explore</strong></td>
+                <td><span class="pill accent">Haiku (fast)</span></td>
+                <td>Read-only codebase searching and analysis</td>
+              </tr>
+              <tr>
+                <td><strong>Plan</strong></td>
+                <td><span class="pill">Inherits from session</span></td>
+                <td>Research during plan mode before presenting a plan</td>
+              </tr>
+              <tr>
+                <td><strong>General-purpose</strong></td>
+                <td><span class="pill">Inherits from session</span></td>
+                <td>Complex multi-step tasks requiring exploration + action</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Creating custom subagents</h3>
+        <p>
+          Subagents are markdown files with YAML frontmatter. Store them
+          in:
+        </p>
+        <ul>
+          <li>
+            <code>.claude/agents/</code> — project scope (commit to git,
+            shared with team)
+          </li>
+          <li>
+            <code>~/.claude/agents/</code> — user scope (available across
+            all your projects)
+          </li>
+        </ul>
+        <p>Example subagent file (<code>.claude/agents/code-reviewer.md</code>):</p>
+        <pre><code class="language-markdown">---
+name: code-reviewer
+description: Reviews code for quality, security, and best practices. Use after writing or modifying code.
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+
+You are a senior code reviewer. When invoked:
+1. Run git diff to see recent changes
+2. Focus on modified files
+3. Report issues organized by priority: Critical / Warning / Suggestion</code></pre>
+        <p>
+          <strong>Supported frontmatter fields</strong> include:
+          <code>name</code>, <code>description</code>, <code>tools</code>,
+          <code>disallowedTools</code>, <code>model</code>,
+          <code>permissionMode</code>, <code>maxTurns</code>,
+          <code>skills</code>, <code>mcpServers</code>,
+          <code>hooks</code>, <code>memory</code>,
+          <code>background</code>, <code>isolation</code>, and
+          <code>color</code>. Only <code>name</code> and
+          <code>description</code> are required.
+        </p>
+        <p>
+          The <code>model</code> field accepts aliases
+          (<code>sonnet</code>, <code>opus</code>, <code>haiku</code>),
+          a full model ID (e.g. <code>claude-sonnet-4-6</code>), or
+          <code>inherit</code> (uses the same model as the main session —
+          the default).
+        </p>
+
+        <h3>Invoking subagents</h3>
+        <p>
+          Claude delegates automatically based on the task and each
+          subagent's <code>description</code> field. You can also invoke
+          them explicitly:
+        </p>
+        <ul>
+          <li>
+            <strong>Natural language:</strong>
+            <code>Use the code-reviewer subagent to check my changes</code>
+          </li>
+          <li>
+            <strong>@-mention:</strong> Type <code>@</code> and pick from
+            the typeahead to guarantee a specific subagent runs for that
+            task
+          </li>
+          <li>
+            <strong>Session-wide:</strong>
+            <code>claude --agent code-reviewer</code> makes the whole
+            session run as that subagent
+          </li>
+        </ul>
+
+        <h3>Subagents vs. main conversation</h3>
+        <div class="compare">
+          <div class="compare-col">
+            <div class="label">Main conversation</div>
+            <h4>Shared context</h4>
+            <p>
+              Iterative back-and-forth, quick targeted changes, or tasks
+              where multiple phases share significant context.
+            </p>
+          </div>
+          <div class="compare-col">
+            <div class="label">Subagent</div>
+            <h4>Isolated context</h4>
+            <p>
+              Verbose output, specific tool restrictions, or tasks
+              self-contained enough to return a summary.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="icon">i</div>
+          <p>
+            Subagents <strong>cannot spawn other subagents</strong>. If
+            you need nested or parallel delegation, use
+            <a href="https://code.claude.com/docs/en/agent-teams">agent teams</a>
+            or chain subagents from the main conversation.
+          </p>
+        </div>
+      </section>
+
+      <!-- 12 -->
+      <section id="output-styles">
+        <span class="section-num">§ 12</span>
+        <h2>Output Styles</h2>
+        <p>
+          <strong>Output styles</strong> adjust how Claude answers — more
+          explanatory versus more terse, or a house tone your organization
+          prefers. Configure them via the <code>outputStyle</code> key in
+          <code>settings.json</code> or through <code>/config</code> in
+          the CLI.
+        </p>
+        <p>
+          Use them for <strong>communication defaults</strong>, not for
+          security rules (use permissions for that).
+        </p>
+        <p>
+          See the
+          <a href="https://code.claude.com/docs/en/output-styles">output styles documentation</a>
+          for available styles and how to configure them.
+        </p>
+      </section>
+
+      <!-- 13 -->
+      <section id="mcp">
+        <span class="section-num">§ 13</span>
+        <h2>MCP Servers (Connect to the Outside World)</h2>
+        <p>
+          <strong>Model Context Protocol (MCP)</strong> is an open standard
+          for connecting Claude Code to external systems: issue trackers,
+          databases, docs, internal HTTP APIs, Slack, and custom tools.
+        </p>
+        <p>
+          <strong>Project MCP servers</strong> are declared in
+          <strong><code>.mcp.json</code></strong> at the project root —
+          team-shared and committed to git.
+        </p>
+        <p>
+          <strong>User-level</strong> MCP server entries are stored in
+          <code>~/.claude.json</code> alongside per-project state and
+          OAuth sessions.
+        </p>
+        <p>
+          To enable a project's MCP servers automatically for all
+          collaborators, set
+          <code>enableAllProjectMcpServers: true</code> in
+          <code>.claude/settings.json</code>. Individual servers can be
+          approved or rejected with <code>enabledMcpjsonServers</code> and
+          <code>disabledMcpjsonServers</code>.
+        </p>
+        <p>
+          Enterprise deployments can allowlist or denylist MCP servers via
+          managed settings using <code>allowedMcpServers</code> and
+          <code>deniedMcpServers</code>.
+        </p>
+        <p>
+          See the
+          <a href="https://code.claude.com/docs/en/mcp">MCP documentation</a>
+          for server configuration format and advanced options.
+        </p>
+      </section>
+
+      <!-- 14 -->
+      <section id="hooks">
+        <span class="section-num">§ 14</span>
+        <h2>Hooks (Automate Around Events)</h2>
+        <p>
+          <strong>Hooks</strong> run external commands when something
+          happens in the Claude Code lifecycle. Common uses include
+          auto-formatting after file edits, logging, validating operations
+          before they execute, or posting to internal systems.
+        </p>
+        <p>Hook events include:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>When it fires</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>PreToolUse</code></td>
+                <td>Before Claude uses a tool</td>
+              </tr>
+              <tr>
+                <td><code>PostToolUse</code></td>
+                <td>After Claude uses a tool</td>
+              </tr>
+              <tr>
+                <td><code>Stop</code></td>
+                <td>When Claude finishes a response</td>
+              </tr>
+              <tr>
+                <td><code>SubagentStart</code></td>
+                <td>When a subagent begins</td>
+              </tr>
+              <tr>
+                <td><code>SubagentStop</code></td>
+                <td>When a subagent completes</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Hooks are configured in <code>settings.json</code> under the
+          <code>hooks</code> key. Example:
+        </p>
+        <pre><code class="language-json">{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "./scripts/run-linter.sh" }
+        ]
+      }
+    ]
+  }
+}</code></pre>
+        <p>
+          Hook commands receive JSON via stdin describing the event. For
+          <code>PreToolUse</code> hooks, exit code <code>2</code> blocks
+          the operation and feeds stderr back to Claude as an error
+          message.
+        </p>
+        <p>
+          Managed environments can restrict which hooks run using
+          <code>allowManagedHooksOnly</code>.
+        </p>
+        <p>
+          See the
+          <a href="https://code.claude.com/docs/en/hooks-guide">hooks documentation</a>
+          for the complete event list, input schema, and exit code
+          behavior.
+        </p>
+      </section>
+
+      <!-- 15 -->
+      <section id="plugins">
+        <span class="section-num">§ 15</span>
+        <h2>Plugins and Marketplaces (Composition)</h2>
+        <p>
+          <strong>Plugins</strong> bundle extensions — skills, agents,
+          hooks, MCP server definitions, and other assets — distributed
+          through marketplaces. Project settings can specify which plugins
+          a repo expects; managed policy can constrain which marketplaces
+          or plugins are permitted.
+        </p>
+        <p>
+          Use the <strong><code>/plugin</code></strong> command to browse
+          available plugins, install or uninstall them, and add or remove
+          marketplaces. Plugin settings live in <code>settings.json</code>
+          under <code>enabledPlugins</code> and
+          <code>extraKnownMarketplaces</code>.
+        </p>
+        <div class="callout warn">
+          <div class="icon">!</div>
+          <p>
+            Learn plugins <em>after</em> you understand settings,
+            permissions, skills, agents, hooks, and MCP — otherwise
+            debugging "who added this behavior?" becomes much harder.
+          </p>
+        </div>
+      </section>
+
+      <!-- 16 -->
+      <section id="advanced">
+        <span class="section-num">§ 16</span>
+        <h2>Advanced: Scheduling, CI/CD, and Programmatic Use</h2>
+        <p>Claude Code goes beyond interactive sessions:</p>
+        <ul>
+          <li>
+            <strong>Routines:</strong> Schedule recurring tasks (morning
+            PR reviews, overnight CI analysis, weekly dependency audits)
+            that run on Anthropic-managed infrastructure via
+            <code>/schedule</code> in the CLI or from the desktop app.
+          </li>
+          <li>
+            <strong>GitHub Actions / GitLab CI/CD:</strong> Automate code
+            review and issue triage in your CI pipeline.
+          </li>
+          <li>
+            <strong>Headless / programmatic use:</strong> Run Claude Code
+            non-interactively with <code>claude -p "your prompt"</code> or
+            via the Agent SDK for fully custom orchestration.
+          </li>
+          <li>
+            <strong>Piping:</strong> Claude Code follows Unix conventions
+            and composes with other tools:
+          </li>
+        </ul>
+        <pre><code class="language-bash"># Analyze recent logs
+tail -200 app.log | claude -p "Slack me if you see any anomalies"
+
+# Bulk review of changed files
+git diff main --name-only | claude -p "review these changed files for security issues"</code></pre>
+        <p>
+          See the
+          <a href="https://code.claude.com/docs/en/cli-reference">CLI reference</a>
+          and
+          <a href="https://code.claude.com/docs/en/headless">programmatic usage</a>
+          docs for details.
+        </p>
+      </section>
+
+      <div class="divider"><span>Reference Links</span></div>
+
+      <!-- 17 -->
+      <section id="docs">
+        <span class="section-num">§ 17</span>
+        <h2>Official Documentation</h2>
+        <p>
+          The official docs live at
+          <strong><code>code.claude.com</code></strong>. All links below
+          are verified against the live documentation.
+        </p>
+        <div class="table-wrap">
+          <table class="docs-table">
+            <thead>
+              <tr>
+                <th>Topic</th>
+                <th>Link</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Overview and install</td>
+                <td><a href="https://code.claude.com/docs/en/overview">Claude Code overview</a></td>
+              </tr>
+              <tr>
+                <td>Quickstart</td>
+                <td><a href="https://code.claude.com/docs/en/quickstart">Quickstart</a></td>
+              </tr>
+              <tr>
+                <td><code>CLAUDE.md</code>, rules, imports, auto memory</td>
+                <td><a href="https://code.claude.com/docs/en/memory">Store instructions and memories</a></td>
+              </tr>
+              <tr>
+                <td><code>.claude/</code> directory</td>
+                <td><a href="https://code.claude.com/docs/en/claude-directory">Explore the .claude directory</a></td>
+              </tr>
+              <tr>
+                <td>Settings, permissions, hooks keys</td>
+                <td><a href="https://code.claude.com/docs/en/settings">Settings</a></td>
+              </tr>
+              <tr>
+                <td>Permission system and rule syntax</td>
+                <td><a href="https://code.claude.com/docs/en/permissions">Permissions</a></td>
+              </tr>
+              <tr>
+                <td>Skills</td>
+                <td><a href="https://code.claude.com/docs/en/skills">Extend Claude with skills</a></td>
+              </tr>
+              <tr>
+                <td>Subagents</td>
+                <td><a href="https://code.claude.com/docs/en/sub-agents">Create custom subagents</a></td>
+              </tr>
+              <tr>
+                <td>Agent teams</td>
+                <td><a href="https://code.claude.com/docs/en/agent-teams">Run agent teams</a></td>
+              </tr>
+              <tr>
+                <td>MCP</td>
+                <td><a href="https://code.claude.com/docs/en/mcp">Model Context Protocol</a></td>
+              </tr>
+              <tr>
+                <td>Hooks</td>
+                <td><a href="https://code.claude.com/docs/en/hooks-guide">Automate with hooks</a></td>
+              </tr>
+              <tr>
+                <td>Output styles</td>
+                <td><a href="https://code.claude.com/docs/en/output-styles">Output styles</a></td>
+              </tr>
+              <tr>
+                <td>Scheduling</td>
+                <td><a href="https://code.claude.com/docs/en/scheduled-tasks">Run prompts on a schedule</a></td>
+              </tr>
+              <tr>
+                <td>CI/CD integration</td>
+                <td><a href="https://code.claude.com/docs/en/github-actions">GitHub Actions</a></td>
+              </tr>
+              <tr>
+                <td>Programmatic use</td>
+                <td><a href="https://code.claude.com/docs/en/headless">Headless usage</a></td>
+              </tr>
+              <tr>
+                <td>CLI reference</td>
+                <td><a href="https://code.claude.com/docs/en/cli-reference">CLI reference</a></td>
+              </tr>
+              <tr>
+                <td>Consumer pricing</td>
+                <td><a href="https://www.claude.com/pricing">Claude pricing</a></td>
+              </tr>
+              <tr>
+                <td>API pricing</td>
+                <td><a href="https://platform.claude.com/docs/en/about-claude/pricing">API pricing</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </article>
+  </div>
+
+  <footer>
+    Part of the <strong>Claude Code on a Greenfield Project</strong>
+    supplementary materials.
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+</body>
+</html>

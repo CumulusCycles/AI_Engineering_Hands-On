@@ -1,0 +1,1341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Dev Tools Comparison · 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5faf8;
+        --surface: #ffffff;
+        --surface-alt: #ebf5f1;
+        --ink: #0f1a17;
+        --ink-muted: #4a5954;
+        --ink-subtle: #7a8a84;
+        --border: #d8e6e0;
+        --border-strong: #b8cec6;
+        --accent: #0d9488;
+        --accent-deep: #0a6e66;
+        --accent-soft: #d1f1ea;
+        --accent-tint: #a7e4d9;
+        --warn: #b45309;
+        --warn-soft: #fef3c7;
+        --good: #059669;
+        --good-soft: #d1fae5;
+        --bad: #b91c1c;
+        --bad-soft: #fee2e2;
+        --radius: 14px;
+        --radius-lg: 22px;
+        --shadow-sm: 0 1px 2px rgba(10, 40, 30, 0.04);
+        --shadow-md: 0 8px 24px -8px rgba(10, 40, 30, 0.12);
+        --shadow-lg: 0 24px 48px -16px rgba(10, 40, 30, 0.15);
+        --font-serif: "Fraunces", Georgia, serif;
+        --font-sans:
+          "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        font-size: 17px;
+        line-height: 1.7;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Hero ---------------------------------------------------------- */
+      .hero {
+        position: relative;
+        padding: 96px 32px 80px;
+        background:
+          linear-gradient(135deg, var(--accent-soft) 0%, var(--bg) 65%),
+          radial-gradient(
+            circle at 85% 15%,
+            var(--accent-tint) 0%,
+            transparent 50%
+          );
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -180px;
+        right: -180px;
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(
+          circle,
+          var(--accent-tint) 0%,
+          transparent 70%
+        );
+        opacity: 0.55;
+        z-index: 0;
+      }
+
+      .hero-inner {
+        position: relative;
+        max-width: 920px;
+        margin: 0 auto;
+        z-index: 1;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 24px;
+        padding: 6px 14px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(4px);
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent-deep);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 0 3px var(--accent-tint);
+      }
+
+      .hero h1 {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        font-size: clamp(40px, 6vw, 68px);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        margin: 0 0 20px;
+        color: var(--ink);
+      }
+
+      .hero h1 em {
+        font-style: italic;
+        font-weight: 500;
+        color: var(--accent-deep);
+      }
+
+      .hero-subtitle {
+        font-family: var(--font-serif);
+        font-weight: 400;
+        font-style: italic;
+        font-size: clamp(20px, 2.2vw, 24px);
+        line-height: 1.5;
+        color: var(--ink-muted);
+        margin: 0 0 32px;
+        max-width: 680px;
+      }
+
+      .hero-meta {
+        display: flex;
+        gap: 32px;
+        flex-wrap: wrap;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--ink-muted);
+      }
+
+      .hero-meta strong {
+        display: block;
+        color: var(--ink);
+        font-weight: 600;
+        margin-bottom: 2px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      /* Article wrap -------------------------------------------------- */
+      article {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 64px 32px 120px;
+      }
+
+      article section {
+        margin-bottom: 72px;
+      }
+
+      .section-num {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--accent-deep);
+        letter-spacing: 0.12em;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+      }
+
+      article h2 {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        font-size: 36px;
+        line-height: 1.15;
+        letter-spacing: -0.015em;
+        margin: 0 0 20px;
+        color: var(--ink);
+      }
+
+      article h3 {
+        font-family: var(--font-serif);
+        font-weight: 600;
+        font-size: 22px;
+        line-height: 1.3;
+        margin: 40px 0 14px;
+        color: var(--ink);
+      }
+
+      article p {
+        margin: 0 0 20px;
+      }
+
+      article strong {
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      /* Lead ---------------------------------------------------------- */
+      .lead {
+        font-family: var(--font-serif);
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1.55;
+        color: var(--ink-muted);
+        border-left: 3px solid var(--accent);
+        padding-left: 24px;
+        margin-bottom: 48px;
+      }
+
+      /* Categories row ----------------------------------------------- */
+      .categories {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin: 32px 0 8px;
+      }
+
+      @media (max-width: 760px) {
+        .categories {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .category {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+        position: relative;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+
+      .category:hover {
+        transform: translateY(-3px);
+        border-color: var(--accent);
+        box-shadow: var(--shadow-md);
+      }
+
+      .category-num {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--accent-deep);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+      }
+
+      .category h4 {
+        font-family: var(--font-serif);
+        font-weight: 600;
+        font-size: 19px;
+        margin: 6px 0 12px;
+        color: var(--ink);
+      }
+
+      .category p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--ink-muted);
+      }
+
+      .category .examples {
+        margin-top: 10px;
+        font-size: 12px;
+        font-family: var(--font-mono);
+        color: var(--accent-deep);
+      }
+
+      /* Tool cards ---------------------------------------------------- */
+      .tool-grid {
+        display: grid;
+        gap: 24px;
+        margin: 32px 0;
+      }
+
+      .tool-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition:
+          box-shadow 0.25s,
+          transform 0.25s;
+      }
+
+      .tool-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+      }
+
+      .tool-head {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(
+          180deg,
+          var(--accent-soft) 0%,
+          var(--surface) 100%
+        );
+      }
+
+      .tool-index {
+        flex-shrink: 0;
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: var(--ink);
+        color: #e9f7f3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-serif);
+        font-weight: 700;
+        font-size: 24px;
+      }
+
+      .tool-meta {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .tool-type {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        color: var(--accent-deep);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .tool-name {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        font-size: 30px;
+        line-height: 1.1;
+        color: var(--ink);
+        margin: 0;
+      }
+
+      .tool-body {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+      }
+
+      @media (max-width: 860px) {
+        .tool-body {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .tool-col {
+        padding: 24px 28px;
+        border-right: 1px solid var(--border);
+      }
+
+      .tool-col:last-child {
+        border-right: none;
+      }
+
+      @media (max-width: 860px) {
+        .tool-col {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .tool-col:last-child {
+          border-bottom: none;
+        }
+      }
+
+      .tool-col h5 {
+        font-family: var(--font-sans);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin: 0 0 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tool-col.strengths h5 {
+        color: var(--good);
+      }
+
+      .tool-col.limits h5 {
+        color: var(--warn);
+      }
+
+      .tool-col.best h5 {
+        color: var(--accent-deep);
+      }
+
+      .tool-col h5::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+      }
+
+      .tool-col.strengths h5::before {
+        background: var(--good);
+      }
+
+      .tool-col.limits h5::before {
+        background: var(--warn);
+      }
+
+      .tool-col.best h5::before {
+        background: var(--accent);
+      }
+
+      .tool-col ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .tool-col li {
+        position: relative;
+        padding-left: 18px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        line-height: 1.55;
+        color: var(--ink);
+      }
+
+      .tool-col li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 10px;
+        height: 2px;
+        background: var(--border-strong);
+      }
+
+      .tool-col.strengths li::before {
+        background: var(--good);
+      }
+
+      .tool-col.limits li::before {
+        background: var(--warn);
+      }
+
+      /* Summary table ------------------------------------------------- */
+      .table-wrap {
+        overflow-x: auto;
+        margin: 24px 0;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+        background: var(--surface);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14.5px;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      th {
+        background: var(--surface-alt);
+        font-weight: 600;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--ink-muted);
+      }
+
+      tr:last-child td {
+        border-bottom: none;
+      }
+
+      tr:hover td {
+        background: var(--accent-soft);
+      }
+
+      td:first-child {
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      /* Keep/drop two-column ----------------------------------------- */
+      .decision-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin: 28px 0;
+      }
+
+      @media (max-width: 760px) {
+        .decision-pair {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .decision {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px 26px;
+        position: relative;
+      }
+
+      .decision.keep {
+        border-left: 4px solid var(--good);
+      }
+
+      .decision.drop {
+        border-left: 4px solid var(--warn);
+      }
+
+      .decision h4 {
+        margin: 0 0 14px;
+        font-family: var(--font-sans);
+        font-size: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .decision.keep h4 {
+        color: var(--good);
+      }
+
+      .decision.drop h4 {
+        color: var(--warn);
+      }
+
+      .decision ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .decision li {
+        position: relative;
+        padding-left: 22px;
+        margin-bottom: 10px;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+
+      .decision li::before {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-family: var(--font-serif);
+        font-weight: 700;
+        font-size: 18px;
+      }
+
+      .decision.keep li::before {
+        content: "✓";
+        color: var(--good);
+      }
+
+      .decision.drop li::before {
+        content: "✕";
+        color: var(--warn);
+      }
+
+      /* Stack recommendation cards ----------------------------------- */
+      .stacks {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin: 32px 0;
+      }
+
+      @media (max-width: 900px) {
+        .stacks {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .stack {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .stack:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stack-head {
+        padding: 24px 26px 20px;
+        background: var(--accent-soft);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .stack-type {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        color: var(--accent-deep);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .stack h4 {
+        font-family: var(--font-serif);
+        font-weight: 700;
+        font-size: 22px;
+        margin: 0 0 12px;
+        color: var(--ink);
+      }
+
+      .stack-tools {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .stack-tool {
+        background: var(--surface);
+        border: 1px solid var(--accent-tint);
+        padding: 4px 10px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--accent-deep);
+      }
+
+      .stack-body {
+        padding: 20px 26px 24px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .stack-row {
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .stack-row strong {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-subtle);
+        margin-bottom: 2px;
+        font-weight: 700;
+      }
+
+      .stack-row.cost strong {
+        color: var(--accent-deep);
+      }
+
+      /* Bottom-line banner ------------------------------------------- */
+      .banner {
+        background: var(--ink);
+        color: #e9f7f3;
+        border-radius: var(--radius);
+        padding: 32px 36px;
+        margin: 32px 0;
+        position: relative;
+      }
+
+      .banner::before {
+        content: "KEY INSIGHT";
+        position: absolute;
+        top: -12px;
+        left: 28px;
+        background: var(--accent);
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        padding: 4px 12px;
+        border-radius: 100px;
+      }
+
+      .banner p {
+        margin: 0;
+        font-family: var(--font-serif);
+        font-size: 19px;
+        line-height: 1.5;
+      }
+
+      .banner strong {
+        color: var(--accent-tint);
+      }
+
+      /* Takeaway final block ----------------------------------------- */
+      .takeaway {
+        background: linear-gradient(
+          135deg,
+          var(--accent-soft),
+          var(--surface-alt)
+        );
+        border: 1px solid var(--accent-tint);
+        border-radius: var(--radius-lg);
+        padding: 36px 40px;
+        margin: 32px 0;
+      }
+
+      .takeaway h3 {
+        margin-top: 0;
+      }
+
+      .takeaway ul {
+        padding-left: 24px;
+      }
+
+      /* Divider ------------------------------------------------------- */
+      .divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 72px 0 56px;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .divider span {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        color: var(--ink-subtle);
+        text-transform: uppercase;
+      }
+
+      /* Footer -------------------------------------------------------- */
+      footer {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 32px 80px;
+        border-top: 1px solid var(--border);
+        font-size: 13px;
+        color: var(--ink-subtle);
+        text-align: center;
+      }
+
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+        background: var(--surface-alt);
+        color: var(--accent-deep);
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Supplementary Resource · Tool Landscape · 2026</p>
+        <h1>AI Dev Tools, <em>compared</em></h1>
+        <p class="hero-subtitle">
+          Six tools, three categories, and the trade-offs that matter when you
+          pick a stack. No "best tool wins" — just where each one actually earns
+          its seat.
+        </p>
+        <div class="hero-meta">
+          <div>
+            <strong>Scope</strong>
+            VSCode · Copilot · Cursor · Antigravity · Claude.ai · Claude Code
+          </div>
+          <div>
+            <strong>Updated</strong>
+            2026
+          </div>
+          <div>
+            <strong>Read time</strong>
+            ~10 minutes
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <article>
+      <p class="lead">
+        This document compares common AI-assisted development tools used in
+        modern software engineering workflows. The goal is to clarify functional
+        overlap, strengths, limitations, and appropriate usage patterns — so
+        your toolchain decisions come from fit, not hype.
+      </p>
+
+      <section id="architecture">
+        <span class="section-num">§ 01</span>
+        <h2>An Architectural View</h2>
+        <p>
+          Before comparing individual products, it helps to see the
+          <strong>shape</strong> each one occupies. AI development tools
+          generally fall into three categories — and most of the confusion in
+          "which one should I use?" disappears once you can name the category.
+        </p>
+
+        <div class="categories">
+          <div class="category">
+            <div class="category-num">01</div>
+            <h4>Completion-based</h4>
+            <p>Assistive inline suggestions. Fast, low latency, no planning.</p>
+            <div class="examples">GitHub Copilot</div>
+          </div>
+          <div class="category">
+            <div class="category-num">02</div>
+            <h4>Interactive</h4>
+            <p>
+              Human-in-the-loop chat and edit flows with codebase awareness.
+            </p>
+            <div class="examples">Cursor · Claude.ai</div>
+          </div>
+          <div class="category">
+            <div class="category-num">03</div>
+            <h4>Agentic</h4>
+            <p>
+              Autonomous plan → execute → verify across files, tools, and
+              terminals.
+            </p>
+            <div class="examples">Claude Code · Antigravity</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="divider"><span>Tool-by-tool breakdown</span></div>
+
+      <section id="tools">
+        <span class="section-num">§ 02</span>
+        <h2>Tool-by-Tool Breakdown</h2>
+
+        <div class="tool-grid">
+          <!-- 1. VSCode -->
+          <div class="tool-card">
+            <div class="tool-head">
+              <div class="tool-index">1</div>
+              <div class="tool-meta">
+                <div class="tool-type">General-purpose IDE</div>
+                <h3 class="tool-name">Visual Studio Code</h3>
+              </div>
+            </div>
+            <div class="tool-body">
+              <div class="tool-col strengths">
+                <h5>Strengths</h5>
+                <ul>
+                  <li>Industry-standard editor with a large ecosystem</li>
+                  <li>Highly extensible via plugins</li>
+                  <li>Strong debugging, Git, and language support</li>
+                  <li>Stable, lightweight, widely adopted</li>
+                </ul>
+              </div>
+              <div class="tool-col limits">
+                <h5>Limitations</h5>
+                <ul>
+                  <li>Not AI-native by default</li>
+                  <li>Requires extensions for AI-assisted workflows</li>
+                  <li>Limited built-in semantic codebase understanding</li>
+                </ul>
+              </div>
+              <div class="tool-col best">
+                <h5>Best use</h5>
+                <ul>
+                  <li>Primary development environment</li>
+                  <li>Teams needing stability and extensibility</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Copilot -->
+          <div class="tool-card">
+            <div class="tool-head">
+              <div class="tool-index">2</div>
+              <div class="tool-meta">
+                <div class="tool-type">Inline AI coding assistant</div>
+                <h3 class="tool-name">GitHub Copilot</h3>
+              </div>
+            </div>
+            <div class="tool-body">
+              <div class="tool-col strengths">
+                <h5>Strengths</h5>
+                <ul>
+                  <li>Fast, low-latency code completion</li>
+                  <li>Strong for boilerplate and repetitive code</li>
+                  <li>Seamless IDE integration (especially VSCode)</li>
+                  <li>Low cognitive overhead</li>
+                </ul>
+              </div>
+              <div class="tool-col limits">
+                <h5>Limitations</h5>
+                <ul>
+                  <li>Limited architectural reasoning</li>
+                  <li>Weak multi-file or repo-wide understanding</li>
+                  <li>Not agentic — cannot plan or execute workflows</li>
+                </ul>
+              </div>
+              <div class="tool-col best">
+                <h5>Best use</h5>
+                <ul>
+                  <li>Daily coding assistance</li>
+                  <li>Boilerplate generation</li>
+                  <li>Lightweight productivity enhancement</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Cursor -->
+          <div class="tool-card">
+            <div class="tool-head">
+              <div class="tool-index">3</div>
+              <div class="tool-meta">
+                <div class="tool-type">AI-native IDE (VSCode-derived)</div>
+                <h3 class="tool-name">Cursor</h3>
+              </div>
+            </div>
+            <div class="tool-body">
+              <div class="tool-col strengths">
+                <h5>Strengths</h5>
+                <ul>
+                  <li>Deep codebase awareness across files</li>
+                  <li>Natural-language-driven refactoring</li>
+                  <li>Integrated AI chat and editing workflows</li>
+                  <li>Strong multi-file editing capabilities</li>
+                </ul>
+              </div>
+              <div class="tool-col limits">
+                <h5>Limitations</h5>
+                <ul>
+                  <li>Resource-intensive compared to VSCode</li>
+                  <li>Higher cost than traditional IDE setups</li>
+                  <li>Primarily interactive, not fully autonomous</li>
+                </ul>
+              </div>
+              <div class="tool-col best">
+                <h5>Best use</h5>
+                <ul>
+                  <li>AI-first development workflows</li>
+                  <li>Cross-file refactors and feature work</li>
+                  <li>Solo developers prioritizing AI integration</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Antigravity -->
+          <div class="tool-card">
+            <div class="tool-head">
+              <div class="tool-index">4</div>
+              <div class="tool-meta">
+                <div class="tool-type">Agent-first IDE platform (Google)</div>
+                <h3 class="tool-name">Antigravity</h3>
+              </div>
+            </div>
+            <div class="tool-body">
+              <div class="tool-col strengths">
+                <h5>Strengths</h5>
+                <ul>
+                  <li>Multi-agent execution workflows</li>
+                  <li>
+                    Multi-surface orchestration: editor, terminal, browser
+                  </li>
+                  <li>Experimental automation and orchestration features</li>
+                  <li>High potential for future autonomous systems</li>
+                </ul>
+              </div>
+              <div class="tool-col limits">
+                <h5>Limitations</h5>
+                <ul>
+                  <li>Early-stage product — potential instability</li>
+                  <li>Agent ecosystem still maturing</li>
+                  <li>Enterprise compatibility varies by stack</li>
+                  <li>Preview quotas can constrain heavy usage</li>
+                  <li>Requires careful supervision</li>
+                </ul>
+              </div>
+              <div class="tool-col best">
+                <h5>Best use</h5>
+                <ul>
+                  <li>Complex parallel workflows</li>
+                  <li>Artifact-based review and orchestration</li>
+                  <li>Teams exploring agent-first development</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Claude.ai Chat -->
+          <div class="tool-card">
+            <div class="tool-head">
+              <div class="tool-index">5</div>
+              <div class="tool-meta">
+                <div class="tool-type">Interactive AI chat interface</div>
+                <h3 class="tool-name">Claude.ai Chat</h3>
+              </div>
+            </div>
+            <div class="tool-body">
+              <div class="tool-col strengths">
+                <h5>Strengths</h5>
+                <ul>
+                  <li>Strong reasoning and long-context understanding</li>
+                  <li>Excellent for planning, debugging, and ideation</li>
+                  <li>Polished UI optimized for human interaction</li>
+                  <li>Low setup complexity</li>
+                </ul>
+              </div>
+              <div class="tool-col limits">
+                <h5>Limitations</h5>
+                <ul>
+                  <li>Not integrated directly into dev environments</li>
+                  <li>Requires manual copy/paste into codebases</li>
+                  <li>No native automation or execution pipeline</li>
+                </ul>
+              </div>
+              <div class="tool-col best">
+                <h5>Best use</h5>
+                <ul>
+                  <li>Architecture planning</li>
+                  <li>Debugging assistance</li>
+                  <li>Exploratory thinking and design discussions</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Claude Code -->
+          <div class="tool-card">
+            <div class="tool-head">
+              <div class="tool-index">6</div>
+              <div class="tool-meta">
+                <div class="tool-type">
+                  Agentic CLI / programmable AI system
+                </div>
+                <h3 class="tool-name">Claude Code</h3>
+              </div>
+            </div>
+            <div class="tool-body">
+              <div class="tool-col strengths">
+                <h5>Strengths</h5>
+                <ul>
+                  <li>Autonomous workflows (plan → execute → verify)</li>
+                  <li>Operates across full codebases</li>
+                  <li>Highly customizable via API integration</li>
+                  <li>Suitable for automation and scripting pipelines</li>
+                </ul>
+              </div>
+              <div class="tool-col limits">
+                <h5>Limitations</h5>
+                <ul>
+                  <li>Requires CLI / programming setup</li>
+                  <li>Token-based pricing can get expensive at scale</li>
+                  <li>Less visual feedback than IDE tools</li>
+                  <li>Requires careful prompt and workflow design</li>
+                </ul>
+              </div>
+              <div class="tool-col best">
+                <h5>Best use</h5>
+                <ul>
+                  <li>Automation-heavy development workflows</li>
+                  <li>Large-scale refactoring and code generation</li>
+                  <li>Backend, infrastructure, and agent-based systems</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <span class="section-num">§ 03</span>
+        <h2>Comparison Summary</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tool</th>
+                <th>Category</th>
+                <th>Primary strength</th>
+                <th>Key limitation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>VSCode</td>
+                <td>IDE</td>
+                <td>Stability + ecosystem</td>
+                <td>Not AI-native</td>
+              </tr>
+              <tr>
+                <td>Copilot</td>
+                <td>AI Assistant</td>
+                <td>Inline autocomplete</td>
+                <td>Limited reasoning</td>
+              </tr>
+              <tr>
+                <td>Cursor</td>
+                <td>AI IDE</td>
+                <td>Codebase-aware editing</td>
+                <td>Cost + resource usage</td>
+              </tr>
+              <tr>
+                <td>Antigravity</td>
+                <td>Agent IDE</td>
+                <td>Multi-agent workflows</td>
+                <td>Early-stage stability</td>
+              </tr>
+              <tr>
+                <td>Claude.ai</td>
+                <td>Chat interface</td>
+                <td>Reasoning + planning</td>
+                <td>Not integrated</td>
+              </tr>
+              <tr>
+                <td>Claude Code</td>
+                <td>Agent system</td>
+                <td>Automation + full workflows</td>
+                <td>Complexity + cost</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="keep-drop">
+        <span class="section-num">§ 04</span>
+        <h2>Claude.ai Chat — Keep or Drop?</h2>
+        <p>
+          Claude.ai and the Claude API serve different roles in a developer
+          workflow. Deciding whether to keep Claude.ai depends on how AI is used
+          in practice.
+        </p>
+
+        <div class="decision-pair">
+          <div class="decision keep">
+            <h4>Keep Claude.ai if</h4>
+            <ul>
+              <li>You are a beginner or intermediate developer</li>
+              <li>
+                You frequently perform exploratory work (planning, debugging,
+                brainstorming)
+              </li>
+              <li>You prefer a polished UI and low setup overhead</li>
+              <li>You rely on interactive iteration and conversation flows</li>
+            </ul>
+          </div>
+          <div class="decision drop">
+            <h4>Consider dropping if</h4>
+            <ul>
+              <li>You primarily use Claude Code or API-based workflows</li>
+              <li>You require full control over prompts and system behavior</li>
+              <li>You are building automation or agent-based systems</li>
+              <li>You are optimizing for cost and scalability</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="banner">
+          <p>
+            Most advanced developers do not fully replace Claude.ai with the
+            API. Instead, usage is typically split:
+            <strong>Claude.ai for exploration and reasoning</strong>,
+            <strong>Claude API/Code for execution and automation</strong>. Many
+            developers benefit from using both rather than choosing one
+            exclusively.
+          </p>
+        </div>
+      </section>
+
+      <section id="recommendations">
+        <span class="section-num">§ 05</span>
+        <h2>Final Recommendation Patterns</h2>
+        <p>
+          Three stacks that actually ship — each with the trade-off that will
+          make or break it.
+        </p>
+
+        <div class="stacks">
+          <div class="stack">
+            <div class="stack-head">
+              <div class="stack-type">Balanced</div>
+              <h4>Balanced Stack</h4>
+              <div class="stack-tools">
+                <span class="stack-tool">VSCode</span>
+                <span class="stack-tool">Copilot</span>
+                <span class="stack-tool">Claude Code</span>
+              </div>
+            </div>
+            <div class="stack-body">
+              <div class="stack-row">
+                <strong>Best for</strong>
+                Most individual developers and teams who want AI gains without
+                changing core editor workflows.
+              </div>
+              <div class="stack-row">
+                <strong>Breakdown point</strong>
+                Can feel fragmented if you over-rely on multiple assistants for
+                the same task types.
+              </div>
+              <div class="stack-row cost">
+                <strong>Cost / complexity</strong>
+                Medium / medium
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="stack-head">
+              <div class="stack-type">AI-Native</div>
+              <h4>AI-Native Stack</h4>
+              <div class="stack-tools">
+                <span class="stack-tool">Cursor</span>
+                <span class="stack-tool">Claude Code</span>
+              </div>
+            </div>
+            <div class="stack-body">
+              <div class="stack-row">
+                <strong>Best for</strong>
+                AI-first developers doing frequent multi-file refactors and
+                natural-language-driven implementation.
+              </div>
+              <div class="stack-row">
+                <strong>Breakdown point</strong>
+                Compute usage and subscription costs can be hard to justify on
+                lightweight projects.
+              </div>
+              <div class="stack-row cost">
+                <strong>Cost / complexity</strong>
+                High / medium–high
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="stack-head">
+              <div class="stack-type">Minimal</div>
+              <h4>Minimal Stack</h4>
+              <div class="stack-tools">
+                <span class="stack-tool">VSCode</span>
+                <span class="stack-tool">Claude Code</span>
+              </div>
+            </div>
+            <div class="stack-body">
+              <div class="stack-row">
+                <strong>Best for</strong>
+                Developers who want low tool sprawl and strong agentic
+                capability with minimal overhead.
+              </div>
+              <div class="stack-row">
+                <strong>Breakdown point</strong>
+                Less inline autocomplete than Copilot-heavy workflows for rapid
+                boilerplate.
+              </div>
+              <div class="stack-row cost">
+                <strong>Cost / complexity</strong>
+                Low–medium / low
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="takeaway">
+        <span class="section-num">§ 06</span>
+        <h2>Key Takeaway</h2>
+        <div class="takeaway">
+          <p>
+            There is significant overlap between modern AI development tools.
+            The optimal stack typically includes:
+          </p>
+          <ul>
+            <li>One <strong>primary IDE</strong></li>
+            <li>
+              One <strong>lightweight completion assistant</strong> (optional)
+            </li>
+            <li>One <strong>agentic system</strong> for advanced workflows</li>
+          </ul>
+          <p style="margin-bottom: 0">
+            Reducing redundancy improves clarity, cost efficiency, and workflow
+            focus. Pick deliberately; trim what overlaps.
+          </p>
+        </div>
+      </section>
+    </article>
+
+    <footer>
+      Part of the <strong>Claude Code on a Greenfield Project</strong>
+      supplementary materials.
+    </footer>
+  </body>
+</html>

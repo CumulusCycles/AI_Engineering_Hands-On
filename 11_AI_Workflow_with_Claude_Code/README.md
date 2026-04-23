@@ -2,7 +2,12 @@
 
 This folder is a **self-contained starting point** for implementing a full-stack web application **from prompts**, using **Claude Code** alongside the specifications and UI artifacts checked in here.
 
-**What exists today:** only **`docs/`** (map in [`docs/README.md`](docs/README.md); master requirements and milestone slices under **`docs/reqs/`** — including **`docs/reqs/mvp/`** and **`docs/reqs/enhancements/`**) and **`designs/`** (visual source of truth: mockups, palette, brand assets). **Application source code is not part of this package**—you (or your audience) generate it in a working tree with Claude Code, guided by those documents.
+This repository intentionally starts without source code or Claude configuration files; it is a specification-first workspace used to teach phased application development with Claude Code.
+
+**What exists today:**
+- **`docs/`** — map in [`docs/README.md`](docs/README.md); master requirements and milestone slices under **`docs/reqs/`** (including **`docs/reqs/mvp/`** and **`docs/reqs/enhancements/`**)
+- **`designs/`** — visual source of truth (mockups, palette, brand assets)
+- **Application source code is not part of this package** — you generate it in a working tree with Claude Code, guided by those documents
 
 There is **no** assumed prior codebase, sibling project, or external chapter to reconcile with. Treat everything under this directory as the **sole** specification set for the build.
 

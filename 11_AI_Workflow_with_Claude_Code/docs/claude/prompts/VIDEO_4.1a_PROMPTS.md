@@ -86,8 +86,16 @@ in-scope tracks (E1, E3, E4) for this video.
 
 3.
 ```
-Using GitHub MCP, please create and checkout a new feature branch called
-feat/enhancements-backend-author from main. Confirm we are on the new branch.
+Create a new feature branch `feat/enhancements-backend-author` from `main`.
+GitHub MCP creates the branch on the remote; raw `git` is still used locally
+to check it out (Claude Code's shell does not have a native MCP "checkout").
+
+1. Use GitHub MCP to create the remote branch `feat/enhancements-backend-author`
+   off `main`.
+2. Locally: `git fetch origin && git checkout feat/enhancements-backend-author`
+   to check it out as a tracking branch.
+
+Confirm we are on the new branch.
 ```
 
 4.
@@ -97,7 +105,9 @@ feat/enhancements-backend-author from main. Confirm we are on the new branch.
 
 **Context:**
 - Only E3 (thumbnail) and E4 (audio) introduce new env vars in this phase —
-  E1 regeneration reuses the existing `OPENAI_API_KEY` and `OPENAI_MODEL`.
+  E1 regeneration reuses the existing `OPENAI_API_KEY` and `OPENAI_CHAT_MODEL`
+  (note: the variable is `OPENAI_CHAT_MODEL`, added in VIDEO_2.1, not
+  `OPENAI_MODEL`).
 - Do NOT add Chroma, embedding, or admin variables yet. Those belong to
   4.1b. Adding them here would spread scope across two videos.
 - Follow the existing convention in `config.py`: typed `Settings` attributes
@@ -139,7 +149,7 @@ feat/enhancements-backend-author from main. Confirm we are on the new branch.
 and two write methods to the content repository.
 
 **Context:**
-- Schema bootstrap runs on app startup (see `backend/app/db/init_db.py`);
+- Schema bootstrap runs on app startup (see `backend/app/database.py` — `bootstrap_database()` in the lifespan);
   there is no Alembic in the project, so new nullable columns will be
   picked up on next start — no migration file needed.
 - All new columns MUST be nullable — existing rows predate the enhancement
@@ -181,12 +191,13 @@ story. Each field regenerates independently.
 - Every regenerate call MUST be logged to `model_call_log` (success or
   failure). Failures log with the error reason; the route still returns an
   appropriate HTTP error.
-- Use the existing OpenAI client configuration (`OPENAI_MODEL`, `OPENAI_API_KEY`
-  from Pydantic Settings) — no new env vars for E1.
+- Use the existing OpenAI client configuration (`OPENAI_CHAT_MODEL`,
+  `OPENAI_API_KEY` from Pydantic Settings) — no new env vars for E1.
 
 **Execution:**
 1. Create `backend/app/services/regeneration_service.py` with:
    - `regenerate_title(db, content_item_id, author_id) -> ContentItem`
+   - `regenerate_synopsis(db, content_item_id, author_id) -> ContentItem`
    - `regenerate_description(db, content_item_id, author_id) -> ContentItem`
    - `regenerate_story(db, content_item_id, author_id) -> ContentItem`
 
@@ -199,18 +210,17 @@ story. Each field regenerates independently.
      untouched
    - Returns the updated item
 
-2. Update `backend/app/schemas/content.py` to add `RegenerateResponse`
-   (same shape as `ContentResponse`).
-
-3. Update `backend/app/routes/content.py` to add three routes:
+2. Update `backend/app/routes/content.py` to add four routes:
    - `POST /content/{content_id}/regenerate/title` → `ContentResponse`
+   - `POST /content/{content_id}/regenerate/synopsis` → `ContentResponse`
    - `POST /content/{content_id}/regenerate/description` → `ContentResponse`
    - `POST /content/{content_id}/regenerate/story` → `ContentResponse`
 
-   All three use the `get_owned_content` dependency and delegate to the
-   matching service function.
+   All four use the `get_owned_content` dependency and delegate to the
+   matching service function. No new schema is needed — the routes return
+   the existing `ContentResponse`.
 
-4. Stage and commit with:
+3. Stage and commit with:
    `feat: E1 per-field regeneration service and routes`
 ```
 
@@ -237,7 +247,8 @@ bytes in-database on the `content_item` row; serve via StreamingResponse.
 1. Create `backend/app/services/thumbnail_service.py` with:
    - `generate_thumbnail(db, content_item_id, author_id) -> ContentItem`
      * Verify ownership via the existing pattern
-     * Build an image prompt from the first ~200 chars of the story/synopsis
+     * Build an image prompt from the first ~200 chars of the story (the
+       MVP `ContentItem` has no `synopsis` column, so use the story text)
      * Call the OpenAI images API using the settings values
      * Download the generated image bytes
      * Log the model call with `operation="generate_thumbnail"`
@@ -297,7 +308,15 @@ but for audio narration.
 
    Both routes use the `get_owned_content` dependency.
 
-3. Stage and commit with:
+3. Update `backend/app/schemas/content.py` `ContentResponse` to expose the
+   `audio_voice` column added in PROMPT 5 — add `audio_voice: str | None`
+   alongside the existing fields. The frontend (VIDEO_4.2) uses this to
+   decide whether to render the audio player, so it must be in the
+   response shape. Do NOT expose the binary blobs (`thumbnail_blob`,
+   `audio_blob`) or MIME columns — those are served via the dedicated
+   streaming GET routes only.
+
+4. Stage and commit with:
    `feat: E4 TTS audio generation and serve routes`
 ```
 
@@ -319,20 +338,31 @@ E4) and confirm the full suite stays green.
 
 **Execution:**
 1. Create `backend/tests/test_regeneration.py` (E1):
-   - `test_regenerate_title_authenticated` → 200; title updated; description
-     and story unchanged
+   - `test_regenerate_title_authenticated` → 200; title updated; synopsis,
+     description, and story unchanged
    - `test_regenerate_title_unauthenticated` → 401
    - `test_regenerate_title_ownership_denial` (author B hits author A's item)
      → 404
+   - `test_regenerate_synopsis_authenticated` → 200; synopsis updated;
+     title, description, story unchanged
    - `test_regenerate_description_authenticated` → 200
    - `test_regenerate_story_authenticated` → 200
 
 2. Create `backend/tests/test_media.py` (E3, E4):
+   - `test_thumbnail_generate_authenticated` → 200; `thumbnail_blob` is set
+     on the row; mock the OpenAI images API to return predictable bytes
    - `test_thumbnail_generate_unauthenticated` → 401
    - `test_thumbnail_generate_ownership_denial` → 404
+   - `test_thumbnail_serve_authenticated` (after generate) → 200; bytes
+     match the mocked content; `Content-Type` matches the stored MIME
    - `test_thumbnail_serve_no_thumbnail` (GET before generate) → 404
+   - `test_audio_generate_authenticated` → 200; `audio_blob` is set;
+     `audio_voice` persisted; mock the OpenAI speech API to return
+     predictable bytes
    - `test_audio_generate_unauthenticated` → 401
    - `test_audio_generate_ownership_denial` → 404
+   - `test_audio_serve_authenticated` (after generate) → 200; bytes match;
+     `Content-Type` is `audio/mpeg`
    - `test_audio_serve_no_audio` (GET before generate) → 404
 
 3. Run the full suite: `cd backend && uv run pytest tests/ -v`. Show me the
@@ -367,6 +397,7 @@ enhancement routes, and rename the collection from MVP to full ScriptSprout.
 
    **4. Regeneration (E1)**
    - `POST /api/content/:id/regenerate/title`
+   - `POST /api/content/:id/regenerate/synopsis`
    - `POST /api/content/:id/regenerate/description`
    - `POST /api/content/:id/regenerate/story`
 
@@ -410,6 +441,19 @@ and lint are both clean.
 
 12.
 ```
+**Input:** Run the **`log-claude-build`** procedure in **`.claude/skills/log-claude-build.md`** for **`VIDEO_4.1a`**.
+
+**Context:**
+- Execute it yourself—do not ask the learner to trigger the skill manually.
+- Stay on **`feat/enhancements-backend-author`**. Ground summaries in **`git log` / `git diff`** for harness paths only (`CLAUDE.md`, `.claude/`, **`.env.example`**).
+
+**Execution:**
+1. Follow the skill end-to-end with **`VIDEO_ID=VIDEO_4.1a`**.
+2. Stage and commit with: `docs: VIDEO_4.1a harness build notes`
+```
+
+13.
+```
 **Input:** Push the branch, open the PR via GitHub MCP, and invoke the
 `pr-reviewer` agent on it.
 
@@ -440,8 +484,8 @@ and lint are both clean.
    (E2, E5) land in the next PR.
 
    ### E1 — Per-field regeneration
-   - `regeneration_service.py` — regenerate title, description, story independently
-   - 3 new routes: POST /api/content/{id}/regenerate/{field}
+   - `regeneration_service.py` — regenerate title, synopsis, description, story independently
+   - 4 new routes: POST /api/content/{id}/regenerate/{field}
    - Each call: ownership guard, single OpenAI call, model call logged
 
    ### E3 — Thumbnail generation
@@ -455,7 +499,8 @@ and lint are both clean.
    ### Quality
    - All tests passing (MVP + E1/E3/E4 tests)
    - Ruff lint clean
-   - Postman collection updated
+   - Postman collection renamed (MVP → full ScriptSprout) and extended with
+     E1/E3/E4 route folders
 
    ### Config additions
    - CLAUDE.md updated for Phase 4.1a

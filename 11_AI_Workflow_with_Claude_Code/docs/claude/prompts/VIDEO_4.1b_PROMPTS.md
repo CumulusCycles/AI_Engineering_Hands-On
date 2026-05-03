@@ -89,8 +89,16 @@ code changes.
 
 3.
 ```
-Using GitHub MCP, please create and checkout a new feature branch called
-feat/enhancements-backend-admin from main. Confirm we are on the new branch.
+Create a new feature branch `feat/enhancements-backend-admin` from `main`.
+GitHub MCP creates the branch on the remote; raw `git` is still used locally
+to check it out (Claude Code's shell does not have a native MCP "checkout").
+
+1. Use GitHub MCP to create the remote branch `feat/enhancements-backend-admin`
+   off `main`.
+2. Locally: `git fetch origin && git checkout feat/enhancements-backend-admin`
+   to check it out as a tracking branch.
+
+Confirm we are on the new branch.
 ```
 
 4.
@@ -261,8 +269,9 @@ content generation and regeneration paths so Chroma stays in sync.
    Preserve all existing behavior.
 
 3. Update `backend/app/services/regeneration_service.py`: after every
-   successful `regenerate_title`, `regenerate_description`, and
-   `regenerate_story`, invoke `embedding_index.upsert_content_item(item)`.
+   successful `regenerate_title`, `regenerate_synopsis`,
+   `regenerate_description`, and `regenerate_story`, invoke
+   `embedding_index.upsert_content_item(item)`.
 
 4. Stage and commit with:
    `feat: E2 embedding index service wired into generate and regenerate`
@@ -295,7 +304,9 @@ cross-author content inspection) and its response schemas.
      * Embed the query via OpenAI
      * Chroma top-5 — NO author filter
      * Hydrate IDs from SQLite `content_items`
-     * Return `{ metrics: get_metrics(), semantic_hits: [ContentResponse...] }`
+     * Return `{ query_text, semantic_hits: [ContentResponse...] }` —
+       NLP query and metrics are separate concerns; the dashboard calls
+       `/admin/metrics` independently when it needs the snapshot
    - `get_model_calls(db, page: int = 1, page_size: int = 20) -> dict`
      * Paginated `model_call_log` rows across all authors, `created_at desc`
      * Return `{ items, total, page, page_size }`
@@ -307,7 +318,8 @@ cross-author content inspection) and its response schemas.
    - `MetricsResponse` — total_items, total_model_calls, success_rate,
      calls_by_operation
    - `NlpQueryRequest` — query_text
-   - `NlpQueryResponse` — metrics, semantic_hits
+   - `NlpQueryResponse` — query_text, semantic_hits (NO metrics — that
+     lives on its own `/admin/metrics` route)
    - `ModelCallResponse` — all fields from `ModelCallLog`
    - `ModelCallListResponse` — items, total, page, page_size
    - `AdminContentResponse` — same shape as `ContentResponse`
@@ -322,9 +334,11 @@ cross-author content inspection) and its response schemas.
 with its four routes, and register the router on the app.
 
 **Context:**
-- `require_admin` was stubbed during the MVP so the dependency name existed
-  but had no real enforcement. Now it must actually check `role == "admin"`
-  and raise `403` otherwise.
+- `require_admin` does NOT exist yet — MVP only added `get_current_session`,
+  `get_current_user`, `require_author`, and `get_owned_content` (no admin
+  routes existed in the MVP). Add `require_admin` now in
+  `backend/app/dependencies/auth.py`; it must check `role == "admin"` and
+  raise `403` otherwise.
 - `403` is the correct response for authenticated-but-not-admin (admin
   existence is not a secret). This differs from the 404-on-ownership-denial
   pattern used on author routes (where the existence of another user's
@@ -336,8 +350,7 @@ with its four routes, and register the router on the app.
   appears under `/api/admin/*` and groups cleanly in the OpenAPI docs.
 
 **Execution:**
-1. Update `backend/app/dependencies/auth.py` to fully implement
-   `require_admin`:
+1. Add `require_admin` to `backend/app/dependencies/auth.py`:
    ```
    def require_admin(current_user: User = Depends(get_current_user)) -> User:
        if current_user.role != "admin":
@@ -451,6 +464,19 @@ and lint are both clean.
 ```
 
 13.
+```
+**Input:** Run the **`log-claude-build`** procedure in **`.claude/skills/log-claude-build.md`** for **`VIDEO_4.1b`**.
+
+**Context:**
+- Execute it yourself—do not ask the learner to trigger the skill manually.
+- Stay on **`feat/enhancements-backend-admin`**. Ground summaries in **`git log` / `git diff`** for harness paths only (`CLAUDE.md`, `.claude/`, **`.gitignore`**, **`.env.example`**).
+
+**Execution:**
+1. Follow the skill end-to-end with **`VIDEO_ID=VIDEO_4.1b`**.
+2. Stage and commit with: `docs: VIDEO_4.1b harness build notes`
+```
+
+14.
 ```
 **Input:** Push the branch, open the PR via GitHub MCP, and invoke the
 `pr-reviewer` agent on it.

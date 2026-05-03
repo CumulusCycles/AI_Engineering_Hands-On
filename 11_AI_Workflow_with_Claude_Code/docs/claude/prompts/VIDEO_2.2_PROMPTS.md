@@ -122,33 +122,51 @@ install all dependencies needed for the MVP.
      @testing-library/jest-dom @testing-library/user-event jsdom \
      @vitest/coverage-v8
    ```
-5. Show me `package.json` so I can confirm everything looks right.
+5. Add the test scripts to `frontend/package.json`. The Vite `react-ts`
+   template ships with `dev`, `build`, `lint`, `preview` scripts but does
+   NOT include a `test` script. Add:
+   - `"test": "vitest"`
+   - `"test:coverage": "vitest --coverage"`
+   The `/test-frontend` slash command (and prompts 16–17) call `npm run test`,
+   so this script must exist.
+6. Show me `package.json` so I can confirm everything looks right.
 ```
 
 6.
 ```
 **Input:** Configure `vite.config.ts` with the dev server proxy and Vitest
-settings, and verify TypeScript strict mode in `tsconfig.json`.
+settings, create the test setup file, and verify TypeScript strict mode in
+`tsconfig.json`.
 
 **Context:**
 - The backend runs on port 8000. Vite's dev server proxy forwards `/api/*`
   and `/health` to it so the frontend can call the backend without CORS issues
   in development.
-- Vitest reads its config from `vite.config.ts` — `test.environment: 'jsdom'`,
-  `test.globals: true`, `test.setupFiles` pointing at `src/tests/setup.ts`.
-- The setup file itself is created in a later prompt; just point to it here.
+- Vitest reads its config from `vite.config.ts`. To get TypeScript types for
+  the `test` field without a triple-slash directive, import `defineConfig`
+  from `'vitest/config'` instead of `'vite'`.
+- The setup file (`src/tests/setup.ts`) is created here, not in prompt 16,
+  so the `setupFiles` reference in `vite.config.ts` resolves immediately —
+  anyone running `npm run test` between this prompt and the test-writing
+  prompt won't hit a missing-file error.
 
 **Execution:**
-1. Update `frontend/vite.config.ts` to:
+1. Update `frontend/vite.config.ts`:
+   - `import { defineConfig } from 'vitest/config'` (NOT from `'vite'` — the
+     vitest version exposes the `test` field types)
    - Proxy `/api/*` to `http://localhost:8000`
    - Proxy `/health` to `http://localhost:8000`
    - Add Vitest config: `environment: 'jsdom'`, `globals: true`,
      `setupFiles: ['src/tests/setup.ts']`
-2. Verify `frontend/src/vite-env.d.ts` exists (Vite generates this).
-3. Update `frontend/tsconfig.json` to ensure strict mode is on and paths
+2. Create `frontend/src/tests/setup.ts` with a single line:
+   `import '@testing-library/jest-dom'`
+   This makes its matchers (e.g. `toBeInTheDocument`) available in every
+   test without per-file imports.
+3. Verify `frontend/src/vite-env.d.ts` exists (Vite generates this).
+4. Update `frontend/tsconfig.json` to ensure strict mode is on and paths
    resolve correctly.
-4. Show me the final `vite.config.ts` before committing.
-5. Stage and commit with a Conventional Commit message.
+5. Show me the final `vite.config.ts` before committing.
+6. Stage and commit with a Conventional Commit message.
 ```
 
 7.
@@ -172,7 +190,8 @@ All types live in `frontend/src/types/`.
    - `ContentCreateRequest`: `{ subject: string; genre: string; audience: string; runtime: string }`
    - `ContentResponse`: `{ id: number; author_id: number; subject: string;
      genre: string; audience: string; runtime: string;
-     title: string | null; description: string | null; story: string | null;
+     title: string | null; synopsis: string | null;
+     description: string | null; story: string | null;
      status: string; created_at: string; updated_at: string }`
    - `ContentListResponse`: `{ items: ContentResponse[]; total: number }`
 3. Create `frontend/src/types/common.ts`:
@@ -271,7 +290,8 @@ wrapper that consumes it.
 1. Update `frontend/src/App.tsx`:
    - Wrap everything in `AuthProvider`
    - Set up `BrowserRouter` with these routes:
-     - `/` → redirect to `/studio` if authenticated, `/login` if not
+     - `/` → `HomePage` for unauthenticated visitors (public landing); redirect
+       to `/studio` if authenticated
      - `/login` → `LoginPage` (public, redirect to `/studio` if authenticated)
      - `/register` → `RegisterPage` (public, redirect to `/studio` if authenticated)
      - `/studio` → `StudioPage` (protected — wrap in `ProtectedRoute`)
@@ -369,6 +389,8 @@ Create `frontend/src/pages/HistoryPage.tsx`:
 3. Each content item renders:
    - Subject (always present)
    - Title (if generated; otherwise placeholder like "Not yet generated")
+   - Synopsis preview (if generated; truncated to ~120 chars to fit the
+     row layout)
    - Status badge (draft / generated)
    - Created date formatted readably
    - Click → navigate to `/studio?id={contentId}`
@@ -405,8 +427,12 @@ Create `frontend/src/pages/StudioPage.tsx`:
 
 2. **View mode (`?id=N`) — item loaded:**
    - Show brief fields (read-only): subject, genre, audience, runtime
-   - Generated content panel with: title, description, story (or placeholders
-     if not yet generated)
+   - Generated content panel with: title, synopsis, description, story
+     (or placeholders if not yet generated). Field order matches
+     `history-detail.html` mockup
+   - Match the field emphasis from the mockups — synopsis renders as a
+     distinct row (per `detail-regenerate.html`), not buried inside the
+     description block
    - Generate button → `contentService.generateContent(contentId)`
      - Loading: field-level loading state in the content panel only
      - Error: `ErrorMessage` in the content panel
@@ -450,20 +476,26 @@ before committing.
 - Tests must cover submit success, validation failure, and loading/error
   states — per the functional and technical requirements.
 - Mock all service calls using Vitest mocks — do NOT make real network calls.
-- Setup file at `frontend/src/tests/setup.ts` extends Vitest matchers via
-  `@testing-library/jest-dom`. `vite.config.ts` already points at it.
+- Setup file at `frontend/src/tests/setup.ts` was created in prompt 6
+  alongside `vite.config.ts`; it extends Vitest matchers via
+  `@testing-library/jest-dom` and is already wired in.
 - If any test fails, follow the `validate-and-fix` skill: root cause, re-run,
   repeat. Do not commit until clean.
 
 **Execution:**
-1. Create `frontend/src/tests/setup.ts` that imports `@testing-library/jest-dom`.
-
-2. Create `frontend/src/tests/LoginPage.test.tsx`:
+1. Create `frontend/src/tests/LoginPage.test.tsx`:
    - `test_login_form_renders`: form fields and submit button present
    - `test_login_validation`: submitting empty form shows validation errors, no API call made
    - `test_login_loading_state`: on submit, button shows loading state, form is disabled
    - `test_login_error_state`: when `authService.login` rejects, `ErrorMessage` is displayed
    - `test_login_success`: when `authService.login` resolves, user is redirected to `/studio`
+
+2. Create `frontend/src/tests/RegisterPage.test.tsx`:
+   - `test_register_form_renders`: username, password, email fields and submit button present
+   - `test_register_validation`: submitting empty form (username/password required) shows validation errors, no API call made
+   - `test_register_loading_state`: on submit, button shows loading state, form is disabled
+   - `test_register_error_state`: when `authService.register` rejects (e.g., 409 username taken), `ErrorMessage` is displayed
+   - `test_register_success`: when `authService.register` resolves, user is redirected to `/studio`
 
 3. Create `frontend/src/tests/StudioPage.test.tsx`:
    - `test_brief_form_renders`: all four brief fields present
@@ -506,16 +538,40 @@ before committing.
 
 18.
 ```
-The backend is already running on port 8000. Please start the frontend dev server:
+Before starting the frontend, the backend needs to be running again and
+`OPENAI_API_KEY` must be set in the project-root `.env`.
 
-Navigate to frontend/ and run: npm run dev
+1. Confirm `OPENAI_API_KEY` is set in `.env` — the manual flow includes
+   generating content, which calls OpenAI and will fail without it.
 
-Confirm it starts on port 5173 with no errors.
-I will manually walk through the full MVP flow in the browser.
-After I confirm everything works, stop the frontend server.
+2. The backend was stopped at the end of VIDEO_2.1 (prompt 17). In a separate
+   terminal, start it again:
+   `cd backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+
+3. Then start the frontend dev server: navigate to `frontend/` and run
+   `npm run dev`. Confirm it starts on port 5173 with no errors.
+
+4. I will manually walk through the full MVP flow in the browser
+   (register → login → create brief → generate content → view in history → logout).
+
+5. After I confirm everything works, stop the frontend server. The backend
+   can stay running for the next phase.
 ```
 
 19.
+```
+**Input:** Run the **`log-claude-build`** procedure in **`.claude/skills/log-claude-build.md`** for **`VIDEO_2.2`**.
+
+**Context:**
+- The skill was installed in **VIDEO_1**. Execute it yourself now—do not ask the learner to trigger the skill manually.
+- Stay on **`feat/frontend-mvp`**. Ground summaries in **`git log` / `git diff`** for harness paths only (`CLAUDE.md`, `.claude/`, and harness-related root **`.env.example`** if it changed this phase).
+
+**Execution:**
+1. Follow the skill end-to-end with **`VIDEO_ID=VIDEO_2.2`**.
+2. Stage and commit with: `docs: VIDEO_2.2 harness build notes`
+```
+
+20.
 ```
 **Input:** Summarize the commits on this branch, push it to origin, and open
 a PR against `main` using the `gh` CLI.

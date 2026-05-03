@@ -369,6 +369,3 @@ mistral_cache/
 .local/
 local/
 *.local
-
-# Module 11 — local VIDEO_GUIDES (not tracked)
-11_AI_Workflow_with_Claude_Code/docs/claude/VIDEO_GUIDES/

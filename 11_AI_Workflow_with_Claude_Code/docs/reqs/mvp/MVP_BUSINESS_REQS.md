@@ -1,7 +1,7 @@
 # ScriptSprout — Business requirements (MVP milestone)
 
 **Document type:** Milestone scope — **not** a second product definition  
-**Audience:** Engineering during **MVP / Video 12** work
+**Audience:** Engineering during **MVP / VIDEO_2.1–2.2** work
 
 ---
 

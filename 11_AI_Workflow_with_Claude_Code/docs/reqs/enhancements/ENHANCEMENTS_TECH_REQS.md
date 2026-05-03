@@ -1,7 +1,7 @@
 # ScriptSprout — Technical requirements (post-MVP enhancements)
 
 **Document type:** Milestone scope — **not** a second architecture spec  
-**Audience:** Engineering during **enhancement / Video 13** work  
+**Audience:** Engineering during **enhancement / VIDEO_4.1a–4.2** work  
 **Assumption:** MVP stack and patterns from [`../mvp/MVP_TECH_REQS.md`](../mvp/MVP_TECH_REQS.md) / [`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md) are **already in production in the repo**.
 
 ---

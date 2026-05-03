@@ -2,12 +2,12 @@
 
 This folder is a **self-contained starting point** for implementing a full-stack web application **from prompts**, using **Claude Code** alongside the specifications and UI artifacts checked in here.
 
-This repository intentionally starts without source code or Claude configuration files; it is a specification-first workspace used to teach phased application development with Claude Code.
+This repository intentionally ships **no application source code** and **no project-root `CLAUDE.md` or `.claude/` tree**—those are created in your working tree when you follow the prompt series. It *does* ship **reference** material under **`docs/claude/`** (global guidance, README, and the numbered `VIDEO_*` prompts). This is a specification-first workspace used to teach phased application development with Claude Code.
 
 **What exists today:**
-- **`docs/`** — map in [`docs/README.md`](docs/README.md); master requirements and milestone slices under **`docs/reqs/`** (including **`docs/reqs/mvp/`** and **`docs/reqs/enhancements/`**)
+- **`docs/`** — map in [`docs/README.md`](docs/README.md); master requirements and milestone slices under **`docs/reqs/`** (including **`docs/reqs/mvp/`** and **`docs/reqs/enhancements/`**); Claude-oriented material under **`docs/claude/`** (prompts, **[`GLOBAL.CLAUDE.md`](docs/claude/GLOBAL.CLAUDE.md)**, **[`build-notes/`](docs/claude/build-notes/)**, **[`templates/`](docs/claude/templates/)** including **`log-claude-build.skill.md`**, **[`CLAUDE_CODE_BUILD_LOG.md`](docs/claude/CLAUDE_CODE_BUILD_LOG.md)** stub); optional long-form HTML under **`docs/supplementary/`**
 - **`designs/`** — visual source of truth (mockups, palette, brand assets)
-- **Application source code is not part of this package** — you generate it in a working tree with Claude Code, guided by those documents
+- **Application source code is not part of this package** — you generate it in a working tree with Claude Code, guided by those documents and prompts
 
 There is **no** assumed prior codebase, sibling project, or external chapter to reconcile with. Treat everything under this directory as the **sole** specification set for the build.
 
@@ -15,8 +15,14 @@ There is **no** assumed prior codebase, sibling project, or external chapter to 
 
 ## Goals
 
-- **Ship in two beats:** first an **MVP** milestone (author auth, single-pass generation, history/detail, persistence, model-call logging), then **post-MVP enhancements** (regeneration, admin NLP/semantic tooling, thumbnails, audio, admin dashboard)—each mapped to the docs under **`docs/reqs/mvp/`** and **`docs/reqs/enhancements/`**.
-- **Honor two contracts:** **`docs/`** for behavior, security, data rules, and architecture; **`designs/`** for layout, states, colors, and branding (with the conflict rule defined in [`designs/README.md`](designs/README.md): functional spec wins on security/data; designs win on pure visuals).
+- **Phased delivery (aligned with [`docs/claude/prompts/`](docs/claude/prompts/)):** follow the **numbered** prompt files in order—**[`VIDEO_1_PROMPTS.md`](docs/claude/prompts/VIDEO_1_PROMPTS.md)** through **`VIDEO_4.2`** (see folder listing). Each phase mixes specs, designs, and prompts differently so scope stays explicit.
+  - **1 — Claude project harness** ([`VIDEO_1_PROMPTS.md`](docs/claude/prompts/VIDEO_1_PROMPTS.md)): read **`docs/reqs/`** and **`designs/`**, then add **`CLAUDE.md`**, **`.claude/`** (rules; **`validate-and-fix`** from prompts; **`log-claude-build`** from **[`docs/claude/templates/`](docs/claude/templates/)**; Context7 MCP; settings), baseline git/env files, and the first [**harness learning logs**](docs/claude/build-notes/README.md)—**no application source yet**.
+  - **2 — MVP application** ([`VIDEO_2.1_PROMPTS.md`](docs/claude/prompts/VIDEO_2.1_PROMPTS.md) backend, then [`VIDEO_2.2_PROMPTS.md`](docs/claude/prompts/VIDEO_2.2_PROMPTS.md) frontend): FastAPI + React MVP—author auth, single-pass generation, history/detail, persistence, model-call logging. Scoped by **`docs/reqs/mvp/`** on top of the master **`docs/reqs/`** and **`designs/`**; this phase adds slash **commands** under **`.claude/commands/`** for test/lint/run loops.
+  - **3 — GitHub workflow in Claude Code** ([`VIDEO_3_PROMPTS.md`](docs/claude/prompts/VIDEO_3_PROMPTS.md)): **GitHub MCP**, the **`pr-reviewer`** agent, and PR automation—**engineering workflow**, not the E1–E5 enhancement tracks. Still driven only from the prompt series (not from **`docs/reqs/enhancements/`**).
+  - **4 — Product enhancements** ([`VIDEO_4.1a_PROMPTS.md`](docs/claude/prompts/VIDEO_4.1a_PROMPTS.md), [`VIDEO_4.1b_PROMPTS.md`](docs/claude/prompts/VIDEO_4.1b_PROMPTS.md), [`VIDEO_4.2_PROMPTS.md`](docs/claude/prompts/VIDEO_4.2_PROMPTS.md)): E1–E5 (regeneration, admin NLP/semantic, thumbnails, audio, admin dashboard). Scoped by **`docs/reqs/enhancements/`** plus **`designs/`**; **4.1b** adds **`.claude/rules/admin-and-search.md`** for admin/semantic boundaries.
+- **Honor two contracts:** when a mockup and **`docs/reqs/`** disagree, follow [`designs/README.md`](designs/README.md): **[`FUNCTIONAL_REQS.md`](docs/reqs/FUNCTIONAL_REQS.md)** wins on **security and data rules**; **`designs/`** wins on **pure layout/visuals**.
+  - **`docs/`** — behavior, security, data rules, and architecture
+  - **`designs/`** — layout, states, colors, and branding
 - **Use Claude Code deliberately:** small, verifiable steps; explicit file context in prompts; frequent test and lint runs; commits at natural boundaries—aligned with how teams ship **modern** web apps, not a single mega-prompt.
 
 ---
@@ -44,12 +50,13 @@ The MVP and enhancement files **point into** the master documents; they do not r
 
 ## Suggested workflow with Claude Code
 
-1. **Bootstrap context** — In Claude Code, ground the session in [`docs/README.md`](docs/README.md), the master trio under [`docs/reqs/`](docs/reqs/), and [`designs/README.md`](designs/README.md). Prefer **attaching or referencing specific paths** over vague “build the app” prompts.
-2. **MVP before enhancements** — Follow [`docs/reqs/mvp/`](docs/reqs/mvp/) as the first delivery slice; only then use [`docs/reqs/enhancements/`](docs/reqs/enhancements/) for the ordered enhancement tracks (E1–E5) described there.
+1. **Bootstrap context** — Ground every session in [`docs/README.md`](docs/README.md), the master trio under [`docs/reqs/`](docs/reqs/), and [`designs/README.md`](designs/README.md). Prefer **attaching or referencing specific paths** over vague “build the app” prompts. For the **guided video path**, drive work from [`docs/claude/prompts/`](docs/claude/prompts/) in **lexicographic file order** (`VIDEO_1` → `VIDEO_2.1` → `VIDEO_2.2` → `VIDEO_3` → `VIDEO_4.1a` → `VIDEO_4.1b` → `VIDEO_4.2`).
+2. **Respect phase boundaries** — **Project harness** (root `CLAUDE.md` + `.claude/`, [`VIDEO_1_PROMPTS.md`](docs/claude/prompts/VIDEO_1_PROMPTS.md)) before **application** code; **MVP** ([`docs/reqs/mvp/`](docs/reqs/mvp/) + [`VIDEO_2.1`](docs/claude/prompts/VIDEO_2.1_PROMPTS.md) / [`VIDEO_2.2`](docs/claude/prompts/VIDEO_2.2_PROMPTS.md)) before **GitHub automation** ([`VIDEO_3_PROMPTS.md`](docs/claude/prompts/VIDEO_3_PROMPTS.md)); only then **enhancements** ([`docs/reqs/enhancements/`](docs/reqs/enhancements/) + `VIDEO_4.x`). The master **`docs/reqs/*_REQS.md`** files stay authoritative throughout (same rule as **What to read first** / milestone table above).
 3. **One capability at a time** — e.g. session + ownership guards before new surfaces; generation happy path before polish. After each step: **run tests/lint** (thresholds are in [`docs/reqs/TECHNICAL_REQS.md`](docs/reqs/TECHNICAL_REQS.md) §14 and the MVP/enhancement tech slices).
 4. **UI work** — Open relevant files under [`designs/mockup-pages/`](designs/mockup-pages/) in a browser; mirror structure and states; follow [`designs/COLOR_PALETTE.md`](designs/COLOR_PALETTE.md) and [`designs/brand/`](designs/brand/) for visuals.
-5. **Secrets and config** — Never commit API keys or real `.env` values. The technical requirements describe **categories** of configuration; mirror them in a root `.env.example` when you scaffold the repo.
+5. **Secrets and config** — Never commit API keys or real `.env` values. The technical requirements describe **categories** of configuration; the prompt series starts a root **`.env.example`** in [`VIDEO_1_PROMPTS.md`](docs/claude/prompts/VIDEO_1_PROMPTS.md) and extends it phase by phase—keep that pattern.
 6. **Teach / record clearly** — When producing a walkthrough, narrate **which doc** justified each prompt and how you **verified** the result (tests, manual check against a mockup, or both).
+7. **Harness learning logs** — Each **`VIDEO_*`** prompt file embeds a **`log-claude-build`** step before push/PR (after **VIDEO_1** prompt **9** installs the skill and **11** runs it the first time). You do **not** copy the template or invoke the skill yourself; outputs live under **`docs/claude/build-notes/`** and **`docs/claude/CLAUDE_CODE_BUILD_LOG.md`** (see **[`docs/claude/build-notes/README.md`](docs/claude/build-notes/README.md)**).
 
 ---
 
@@ -57,21 +64,32 @@ The MVP and enhancement files **point into** the master documents; they do not r
 
 Details live in [`docs/reqs/TECHNICAL_REQS.md`](docs/reqs/TECHNICAL_REQS.md) (stack §2). At a high level you will need:
 
-- **Claude Code** (or equivalent agentic coding workflow you standardize on for the recording)
+- **Claude Code**, with **sign-in / plan access as Claude Code requires**—typically an **Anthropic** account; follow current Claude Code product documentation for your environment.
 - **Runtime tooling** consistent with the technical spec (e.g. Python and Node ecosystems as specified there)
-- **Provider credentials** for AI and, in later milestones, embeddings/media APIs—via environment variables, not source control
+- **OpenAI API key** — for **chat** generation in the baseline stack; enhancement milestones add **embedding** calls (admin semantic / vector index), plus **image** and **TTS** APIs where implemented—all as the same OpenAI integration described in the technical and enhancement requirements. If you follow [`docs/claude/prompts/`](docs/claude/prompts/), **Phase 3** also uses OpenAI for the **`pr-reviewer`** agent (diff-based PR review). Never commit keys; use environment variables only.
+- **GitHub account + PAT** — the prompt track expects **`GH_USERNAME`**, **`GH_REPO`**, and a fine-grained **`GH_PAT`** in `.env` (templates start in [`VIDEO_1_PROMPTS.md`](docs/claude/prompts/VIDEO_1_PROMPTS.md)). Phases **1–2** use the **`gh`** CLI for push/PR against **`origin`**; from **Phase 3** onward, prompts move remote GitHub steps to **GitHub MCP** while still reading those same variables—never commit the PAT.
+- **Anything else** your tooling needs (for example **Context7** or other MCP credentials)—only if you enable those servers; keep secrets in the environment, not in git.
 
 ---
 
 ## Repository layout (artifacts only)
 
 ```
+README.md         # This chapter’s overview (you are here)
 docs/
   README.md       # Map of docs/ and reading order
   reqs/           # Master BUSINESS / FUNCTIONAL / TECHNICAL requirements
     mvp/          # MVP milestone pointers
     enhancements/ # Post-MVP enhancement pointers
-designs/          # Mockups, CSS baseline, color palette, brand assets — UI contract
+  claude/         # Claude Code helpers: phased prompt series, templates, learning logs
+    README.md     # How to use docs/claude/
+    prompts/      # VIDEO_*_PROMPTS.md — follow-along build prompts
+    build-notes/  # Per-video harness notes (README + learner-generated VIDEO_*.md)
+    templates/    # e.g. log-claude-build.skill.md → .claude/skills/
+    CLAUDE_CODE_BUILD_LOG.md  # Cumulative harness log (stub; VIDEO_1 prompts 9+11, then each VIDEO_* before PR)
+    GLOBAL.CLAUDE.md
+  supplementary/ # Optional long-form HTML (e.g. tooling comparisons, fundamentals)
+designs/          # mockup-pages/, brand/, COLOR_PALETTE.md, README — UI contract
 LICENSE           # License for materials in this folder
 ```
 

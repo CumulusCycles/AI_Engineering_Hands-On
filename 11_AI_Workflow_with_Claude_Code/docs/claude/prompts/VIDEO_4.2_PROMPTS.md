@@ -77,8 +77,16 @@ then summarize UI scope — without writing any code.
 
 3.
 ```
-Using GitHub MCP, please create and checkout a new feature branch called
-feat/enhancements-frontend from main. Confirm we are on the new branch.
+Create a new feature branch `feat/enhancements-frontend` from `main`.
+GitHub MCP creates the branch on the remote; raw `git` is still used locally
+to check it out (Claude Code's shell does not have a native MCP "checkout").
+
+1. Use GitHub MCP to create the remote branch `feat/enhancements-frontend`
+   off `main`.
+2. Locally: `git fetch origin && git checkout feat/enhancements-frontend`
+   to check it out as a tracking branch.
+
+Confirm we are on the new branch.
 ```
 
 4.
@@ -97,10 +105,17 @@ response shape — content (E1/E3/E4) and admin (E2/E5).
   first, call sites in subsequent prompts.
 
 **Execution:**
-1. Update `frontend/src/types/content.ts` to add:
-   - `RegenerateResponse` — same shape as `ContentResponse`
-   - `ThumbnailAvailable` — `{ has_thumbnail: boolean }`
-   - `AudioAvailable` — `{ has_audio: boolean; audio_voice: string | null }`
+1. Update `frontend/src/types/content.ts` `ContentResponse` to add the new
+   media fields exposed by the enhanced backend (per the VIDEO_4.1a backend
+   schema update):
+   - `audio_voice: string | null` (the voice used for the most recent TTS
+     generation; `null` if no audio has been generated)
+
+   No separate `RegenerateResponse` is needed — regenerate routes return
+   `ContentResponse`. No separate `ThumbnailAvailable` or `AudioAvailable`
+   types either: the frontend uses `audio_voice !== null` to decide whether
+   to render `<AudioPlayer>`, and `<ThumbnailPreview>` falls back to its
+   placeholder via `img.onError` when no thumbnail exists.
 
 2. Create `frontend/src/types/admin.ts` with:
    - `MetricsResponse` — `total_items`, `total_model_calls`, `success_rate`,
@@ -110,8 +125,9 @@ response shape — content (E1/E3/E4) and admin (E2/E5).
      prompt_tokens, completion_tokens, error_class, created_at)
    - `ModelCallListResponse` — `items`, `total`, `page`, `page_size`
    - `NlpQueryRequest` — `query_text: string`
-   - `NlpQueryResponse` — `metrics: MetricsResponse`, `semantic_hits:
-     ContentResponse[]`
+   - `NlpQueryResponse` — `query_text: string`, `semantic_hits:
+     ContentResponse[]` (no `metrics` — `/admin/metrics` is a separate route
+     that the dashboard calls independently)
 
 3. Update `frontend/src/types/index.ts` to re-export all new types.
 
@@ -141,6 +157,8 @@ create a new `adminService.ts` for E2/E5.
 1. Update `frontend/src/services/contentService.ts` to add:
    - `regenerateTitle(contentId: number): Promise<ContentResponse>`
      → `POST /api/content/{contentId}/regenerate/title`
+   - `regenerateSynopsis(contentId: number): Promise<ContentResponse>`
+     → `POST /api/content/{contentId}/regenerate/synopsis`
    - `regenerateDescription(contentId: number): Promise<ContentResponse>`
      → `POST /api/content/{contentId}/regenerate/description`
    - `regenerateStory(contentId: number): Promise<ContentResponse>`
@@ -214,9 +232,10 @@ the view-mode content panel.
   from `designs/COLOR_PALETTE.md`.
 - Field-local loading is the critical UX invariant for E1 (functional
   requirement R-3): when the author regenerates the title, ONLY the title
-  shows a spinner — description and story stay readable and their buttons
-  stay active. Use three independent state slices (one per field), not a
-  single page-level loading flag.
+  shows a spinner — synopsis, description, and story stay readable and
+  their buttons stay active. Use four independent state slices (one per
+  field: title, synopsis, description, story), not a single page-level
+  loading flag.
 - Regenerate/generate buttons should only appear when the underlying field
   has content (e.g., don't show "Regenerate title" on a freshly-created,
   not-yet-generated item).
@@ -229,15 +248,16 @@ the view-mode content panel.
 **Execution:**
 1. Update `StudioPage.tsx` view-mode content panel to add:
 
-   **E1 — Per-field regeneration** (title, description, story):
-   - Three independent loading states (one per field)
+   **E1 — Per-field regeneration** (title, synopsis, description, story):
+   - Four independent loading states (one per field)
    - Each field gets a "Regenerate" button, shown only when the field has
      content
    - While regenerating: that field shows a loading indicator; its button
      is disabled; other fields remain untouched and interactive
    - Error: scoped `ErrorMessage` below the affected field
    - Success: update the field content in place
-   - Call `contentService.regenerateTitle / regenerateDescription / regenerateStory`
+   - Call `contentService.regenerateTitle / regenerateSynopsis /
+     regenerateDescription / regenerateStory`
 
    **E3 — Thumbnail** (below the content panel):
    - "Generate Thumbnail" button — visible only when `story` is present
@@ -296,8 +316,9 @@ pages into the router, and hide admin nav links from author sessions.
   disabled, not greyed out, *hidden*. This matches CLAUDE.md's admin surface
   invariant ("hidden from author sessions entirely").
 - This prompt does NOT create the admin pages themselves — those land in
-  PROMPTS 10 and 11. Import them by filename and accept the temporary
-  "unresolved module" state; the next prompt resolves it.
+  PROMPTS 10 and 11. Route registration in `App.tsx` is therefore deferred
+  to PROMPT 11 (after both pages exist) so the project never enters a
+  broken state where `App.tsx` imports a non-existent module.
 
 **Execution:**
 1. Update `frontend/src/auth/ProtectedRoute.tsx` to add an `AdminRoute`
@@ -307,15 +328,12 @@ pages into the router, and hide admin nav links from author sessions.
    - If authenticated but `user.role !== "admin"`: redirect to `/studio`
    - Otherwise: render children
 
-2. Update `frontend/src/App.tsx` to add:
-   - `/admin` → `AdminPage` wrapped in `AdminRoute`
-   - `/admin/nlp` → `AdminNlpPage` wrapped in `AdminRoute`
+2. Update `Layout.tsx` so the Admin nav link(s) only render when
+   `user?.role === "admin"`. Point the link at `/admin`; the route will be
+   wired in PROMPT 11 once both admin pages exist.
 
-3. Update `Layout.tsx` so the Admin nav link(s) only render when
-   `user?.role === "admin"`.
-
-4. Stage and commit with:
-   `feat: add AdminRoute guard and wire admin routes and nav`
+3. Stage and commit with:
+   `feat: add AdminRoute guard and conditional admin nav (routes wired in PROMPT 11)`
 ```
 
 10.
@@ -391,7 +409,6 @@ investigation tool.
    - `loading`: disable the form; show `LoadingSpinner` in the results area
    - `error`: show `ErrorMessage`
    - `success`:
-     - Metrics snapshot (compact): total items, total calls, success rate
      - Semantic hits list: one row per hit (subject, title/placeholder,
        `author_id`, status)
      - If hits empty: show `EmptyState` with copy "No matching content
@@ -399,8 +416,17 @@ investigation tool.
 
 2. Add a back link to `/admin`.
 
-3. Stage and commit with:
-   `feat: E2 admin NLP query page with empty-state per S-3`
+3. Now that both `AdminPage` and `AdminNlpPage` exist, wire the admin
+   routes into `frontend/src/App.tsx`:
+   - `/admin` → `AdminPage` wrapped in `AdminRoute`
+   - `/admin/nlp` → `AdminNlpPage` wrapped in `AdminRoute`
+
+   Registering both routes here (rather than in PROMPT 9) avoids the
+   temporary "unresolved module" state Vite would otherwise hit between
+   PROMPT 9 and PROMPT 11.
+
+4. Stage and commit with:
+   `feat: E2 admin NLP query page (+ wire admin routes in App.tsx)`
 ```
 
 12.
@@ -427,9 +453,12 @@ dashboard, and the E2 Admin NLP page.
 1. Create `frontend/src/tests/StudioPageEnhancements.test.tsx`:
    - `test_regenerate_title_button_appears_when_title_exists`
    - `test_regenerate_title_shows_field_loading` — loading on title only;
-     description and story NOT in loading state
+     synopsis, description, and story NOT in loading state
    - `test_regenerate_title_error` — `ErrorMessage` scoped to title only
    - `test_regenerate_title_success` — updated title shown in place
+   - `test_regenerate_synopsis_shows_field_loading` — loading on synopsis
+     only; other three fields NOT in loading state
+   - `test_regenerate_synopsis_success` — updated synopsis shown in place
    - `test_generate_thumbnail_button_appears_when_story_exists`
    - `test_generate_thumbnail_loading_state`
    - `test_generate_thumbnail_error`
@@ -482,12 +511,41 @@ and lint are both clean.
 
 14.
 ```
-Please start the frontend dev server — run `npm run dev` from `frontend/`.
-Confirm it starts on port 5173 with no errors, then alert me when it is
-ready. I will walk through the complete application flow in the browser.
+Before starting the frontend, confirm the backend is running and the
+required env vars are set in the project-root `.env`:
+
+1. Confirm `.env` has `OPENAI_API_KEY` set (used for generation, embeddings,
+   thumbnails, audio) AND `ADMIN_USERNAME` + `ADMIN_PASSWORD` set (the
+   admin bootstrap reads these on backend startup; admin-only flows in
+   this smoke test require an admin user to log in as).
+
+2. The backend was likely stopped at the end of an earlier phase. In a
+   separate terminal, start it again:
+   `cd backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`
+   Watch the startup log for "Admin user bootstrapped" or "Admin user
+   already exists" — if you see "Admin bootstrap skipped (credentials not
+   set)", stop and set `ADMIN_USERNAME` / `ADMIN_PASSWORD` first.
+
+3. Then start the frontend dev server: from `frontend/`, run `npm run dev`.
+   Confirm it starts on port 5173 with no errors and alert me when it is
+   ready. I will walk through the complete application flow in the
+   browser — author flow (E1/E3/E4) AND admin flow (E2/E5).
 ```
 
 15.
+```
+**Input:** Run the **`log-claude-build`** procedure in **`.claude/skills/log-claude-build.md`** for **`VIDEO_4.2`**.
+
+**Context:**
+- Execute it yourself—do not ask the learner to trigger the skill manually.
+- Stay on **`feat/enhancements-frontend`**. Ground summaries in **`git log` / `git diff`** for harness paths only (`CLAUDE.md`, `.claude/`).
+
+**Execution:**
+1. Follow the skill end-to-end with **`VIDEO_ID=VIDEO_4.2`**.
+2. Stage and commit with: `docs: VIDEO_4.2 harness build notes`
+```
+
+16.
 ```
 **Input:** Push the branch, open the PR via GitHub MCP, and invoke the
 `pr-reviewer` agent on it.
@@ -522,7 +580,7 @@ ready. I will walk through the complete application flow in the browser.
    - Field-scoped error messages — other fields unaffected
 
    ### E2 — Admin NLP query page
-   - AdminNlpPage: text input, submit, metrics snapshot + semantic hits display
+   - AdminNlpPage: text input, submit, semantic hits display (metrics live on /admin)
    - Empty state for no results per functional requirements S-3
    - All four async states handled
 

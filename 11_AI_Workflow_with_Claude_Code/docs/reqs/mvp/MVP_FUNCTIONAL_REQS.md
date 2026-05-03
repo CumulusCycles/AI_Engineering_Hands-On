@@ -1,7 +1,7 @@
 # ScriptSprout — Functional requirements (MVP milestone)
 
 **Document type:** Milestone slice — **not** a second functional spec  
-**Audience:** Engineering / QA during **MVP / Video 12**
+**Audience:** Engineering / QA during **MVP / VIDEO_2.1–2.2**
 
 ---
 
@@ -23,7 +23,7 @@
 | **§2** | Actors and roles | **Guest** + **Author** required. **Admin** behaviors in §5 are **out of MVP** (no admin UI/routes yet). |
 | **§3** | Cross-cutting UX (`FX-*`) | Applies in full — loading / error / empty / success, session loss, destructive confirm only if MVP UI has destructive actions. |
 | **§4.1** | Registration and authentication (`A-*`) | Applies — register, login, logout, me; **A-5** email verification is **optional** for MVP unless you explicitly add it. |
-| **§4.2** | Create and generate (`C-*`) | **C-1–C-4** apply. **Synopsis / multi-stage** (`C-2` optional parts): implement **only** if `designs/` require it for MVP; otherwise **title + description + story** is sufficient. |
+| **§4.2** | Create and generate (`C-*`) | **C-1–C-4** apply. Synopsis (`C-2`) is **in scope for MVP** — `designs/` require it. Title, description, story, and synopsis are all required fields. |
 | **§4.4** | History and detail (`H-*`) | Applies in full. |
 | **§6** | Data and privacy (`P-*`) | Applies as written. |
 | **§7** | Non-functional behavior, user-visible (`N-*`) | Applies in full — responsive async UX; laptop-scale viewports per **`designs/`**. |

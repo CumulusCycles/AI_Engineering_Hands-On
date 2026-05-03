@@ -1,7 +1,7 @@
 # ScriptSprout — Functional requirements (post-MVP enhancements)
 
 **Document type:** Milestone slice — **not** a second functional spec  
-**Audience:** Engineering / QA during **enhancement / Video 13**  
+**Audience:** Engineering / QA during **enhancement / VIDEO_4.1a–4.2**  
 **Assumption:** **MVP** behaviors in [`../mvp/MVP_FUNCTIONAL_REQS.md`](../mvp/MVP_FUNCTIONAL_REQS.md) are **already implemented**.
 
 ---

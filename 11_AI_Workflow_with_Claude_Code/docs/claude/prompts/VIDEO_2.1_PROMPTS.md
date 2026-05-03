@@ -114,16 +114,21 @@ setting up the package manager and dependencies.
 **Execution:**
 1. Create the `backend/` directory.
 2. From inside `backend/`, initialize a uv project: `uv init`
-3. Add core dependencies:
+3. Delete the auto-generated entry-point stub `uv init` creates at the backend
+   root (typically `main.py`, sometimes `hello.py` on older uv versions). Leave
+   `pyproject.toml`, `.python-version`, and `README.md` in place. The real
+   FastAPI app entry point is created at `backend/app/main.py` in a later
+   prompt — leaving the stub would cause confusion with that file.
+4. Add core dependencies:
    ```
    uv add fastapi uvicorn[standard] sqlalchemy pydantic-settings \
      python-multipart itsdangerous passlib[bcrypt] openai slowapi
    ```
-4. Add dev dependencies:
+5. Add dev dependencies:
    ```
    uv add --dev pytest pytest-asyncio httpx ruff
    ```
-5. Show me `pyproject.toml` so I can confirm the dependency list is correct.
+6. Show me `pyproject.toml` so I can confirm the dependency list is correct.
 ```
 
 6.
@@ -141,8 +146,55 @@ places.
 - `postman/` is created now but stays empty until the end of this phase.
 
 **Execution:**
-Create this exact tree, with an `__init__.py` in every Python package directory:
+Create this exact tree, with an `__init__.py` in every Python package directory.
+All `.py` files except `__init__.py` are **empty stubs** for now. `postman/` is an
+empty directory (no placeholder file). **`pyproject.toml`** already exists from the
+previous prompt — do not remove or replace it.
 
+```
+backend/
+├── pyproject.toml             # already exists — leave as-is
+├── app/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── database.py
+│   ├── limiter.py
+│   ├── main.py
+│   ├── dependencies/
+│   │   ├── __init__.py
+│   │   └── auth.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── session.py
+│   │   ├── content_item.py
+│   │   └── model_call_log.py
+│   ├── repositories/
+│   │   ├── __init__.py
+│   │   ├── user_repo.py
+│   │   ├── session_repo.py
+│   │   ├── content_repo.py
+│   │   └── model_call_log_repo.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── health.py
+│   │   ├── auth.py
+│   │   └── content.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── common.py
+│   │   └── content.py
+│   └── services/
+│       ├── __init__.py
+│       ├── auth_service.py
+│       └── content_service.py
+├── postman/
+└── tests/
+    ├── conftest.py
+    ├── test_auth.py
+    ├── test_content.py
+    └── test_health.py
 ```
 
 7.
@@ -242,6 +294,9 @@ environment variables.
    - `audience`: String, not null
    - `runtime`: String, not null
    - `title`: String, nullable (generated)
+   - `synopsis`: Text, nullable (generated — short summary, between
+     description and story in length; required by `history-detail.html`
+     and `detail-regenerate.html` mockups)
    - `description`: Text, nullable (generated)
    - `story`: Text, nullable (generated)
    - `status`: String, not null, default `"draft"`
@@ -269,16 +324,23 @@ environment variables.
 
 9.
 ```
-**Input:** Create the database module and the FastAPI application entry
-point. After this prompt the app must be runnable for the first time, with
-automatic schema bootstrap on startup.
+**Input:** Create the database module, the rate limiter, and the FastAPI
+application entry point. After this prompt the app must be runnable for the
+first time, with automatic schema bootstrap on startup.
 
 **Context:**
 - Use the modern `@asynccontextmanager` lifespan pattern — NOT the deprecated
   `@app.on_event` decorators.
 - Import all models before calling `Base.metadata.create_all(engine)` so they
   are registered with metadata before the tables are created.
-- Health router is registered here; we'll create the router file itself next.
+- The rate limiter lives in its own module (`app/limiter.py`) to avoid a
+  circular import between `main.py` (registers the middleware) and
+  `routes/auth.py` (uses the decorator). Both import the same `limiter`
+  instance from `app.limiter`.
+- No routers are registered yet — schemas, repositories, and route files come
+  in later prompts. After this prompt the app starts cleanly with an empty
+  API surface (just `/` → `/docs` redirect and Swagger). Routers are wired
+  in once the route files exist.
 
 **Execution:**
 1. Create `backend/app/database.py`:
@@ -289,16 +351,27 @@ automatic schema bootstrap on startup.
    - `bootstrap_database()` function: imports all models, then calls
      `Base.metadata.create_all(engine)`
 
-2. Create `backend/app/main.py`:
+2. Create `backend/app/limiter.py`:
+   - Imports: `from slowapi import Limiter`, `from slowapi.util import get_remote_address`
+   - Export a single instance: `limiter = Limiter(key_func=get_remote_address)`
+   - That is the entire file. Keeping it tiny lets both `main.py` and route
+     files import the same instance without circular imports.
+
+3. Create `backend/app/main.py`:
    - FastAPI app with `title="ScriptSprout API"`, `version="0.1.0"`
    - CORS middleware using `settings.CORS_ORIGINS` (allow credentials, all
      methods, all headers)
    - Lifespan context manager (using `@asynccontextmanager`) that calls
      `bootstrap_database()` on startup
-   - Register the health router (file created in a subsequent prompt)
+   - Rate limiter wiring: import `limiter` from `app.limiter`, then
+     `app.state.limiter = limiter`; register a `RateLimitExceeded` exception
+     handler using `slowapi._rate_limit_exceeded_handler`; add
+     `SlowAPIMiddleware`
    - `GET /` redirects to `/docs`
+   - Do NOT register any routers yet — they are wired in later (prompt 14)
+     after the route files exist.
 
-3. Stage and commit with a Conventional Commit message.
+4. Stage and commit with a Conventional Commit message.
 ```
 
 10.
@@ -311,20 +384,29 @@ automatic schema bootstrap on startup.
 - Field names and types must match the models defined in the previous prompt.
 - `ErrorResponse` must match the consistent error shape our backend rules
   require: `{"code": "...", "message": "..."}`.
+- Response schemas that wrap SQLAlchemy ORM rows (`AuthResponse`,
+  `ContentResponse`, `ContentListResponse`) MUST set
+  `model_config = ConfigDict(from_attributes=True)` so FastAPI can serialize
+  ORM instances directly via `response_model=...`. Pure request schemas
+  (`RegisterRequest`, `LoginRequest`, `ContentCreateRequest`) and non-ORM
+  responses (`MessageResponse`, `ErrorResponse`, `HealthResponse`) do NOT
+  need it.
 
 **Execution:**
 1. Create `backend/app/schemas/auth.py`:
    - `RegisterRequest`: `username`, `password`, `email` (optional)
    - `LoginRequest`: `username`, `password`
-   - `AuthResponse`: `id`, `username`, `role`, `created_at`
+   - `AuthResponse`: `id`, `username`, `role`, `created_at` —
+     `model_config = ConfigDict(from_attributes=True)`
    - `MessageResponse`: `message` (generic success message)
 
 2. Create `backend/app/schemas/content.py`:
    - `ContentCreateRequest`: `subject`, `genre`, `audience`, `runtime`
    - `ContentResponse`: `id`, `author_id`, `subject`, `genre`, `audience`,
-     `runtime`, `title`, `description`, `story`, `status`, `created_at`,
-     `updated_at`
-   - `ContentListResponse`: `items` (list of `ContentResponse`), `total`
+     `runtime`, `title`, `synopsis`, `description`, `story`, `status`,
+     `created_at`, `updated_at` — `model_config = ConfigDict(from_attributes=True)`
+   - `ContentListResponse`: `items` (list of `ContentResponse`), `total` —
+     `model_config = ConfigDict(from_attributes=True)`
 
 3. Create `backend/app/schemas/common.py`:
    - `ErrorResponse`: `code`, `message`
@@ -366,7 +448,7 @@ access layer for the MVP.
    - `get_by_id(db, content_id) → ContentItem | None`
    - `get_by_id_and_author(db, content_id, author_id) → ContentItem | None`
    - `list_by_author(db, author_id) → list[ContentItem]`
-   - `update_generated_fields(db, content_id, title, description, story, status) → ContentItem`
+   - `update_generated_fields(db, content_id, title, synopsis, description, story, status) → ContentItem`
 
 4. Create `backend/app/repositories/model_call_log_repo.py`:
    - `create(db, user_id, operation, model_name, success, content_item_id=None,
@@ -390,19 +472,30 @@ author-role enforcement, one for content ownership enforcement.
 - The session cookie is HTTP-only (set by the login route).
 
 **Execution:**
-Create `backend/app/dependencies/auth.py` with three dependency functions:
+Create `backend/app/dependencies/auth.py` with four dependency functions.
+Per the Session-alias rule in `.claude/rules/backend-fastapi.md`: alias
+OUR auth `Session` model as `AuthSession`
+(`from app.models.session import Session as AuthSession`); leave
+SQLAlchemy's `Session` un-aliased. Apply this in every backend file that
+references both.
 
-1. `get_current_user(request: Request, db: Session = Depends(get_db)) → User`
+1. `get_current_session(request, db) → Session` (the auth Session model)
    - Read session ID from the HTTP-only session cookie
    - Call `session_repo.get_valid_session()` to validate
    - If no session or invalid: raise `HTTPException 401`
-   - Return the `User` associated with the session
+   - Return the auth `Session` model
+   - Use this when the route needs the session ID itself (e.g., logout)
 
-2. `require_author(current_user: User = Depends(get_current_user)) → User`
+2. `get_current_user(session = Depends(get_current_session)) → User`
+   - Return `session.user` (via the SQLAlchemy relationship)
+   - Most protected routes use this; it transitively gates auth via
+     `get_current_session`
+
+3. `require_author(current_user: User = Depends(get_current_user)) → User`
    - If user role is not `"author"` or `"admin"`: raise `HTTPException 403`
    - Return the user
 
-3. `get_owned_content(content_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) → ContentItem`
+4. `get_owned_content(content_id: int, current_user: User = Depends(get_current_user), db = Depends(get_db)) → ContentItem`
    - Call `content_repo.get_by_id_and_author(db, content_id, current_user.id)`
    - If not found: raise `HTTPException 404` (never 403 — do not reveal existence)
    - Return the `ContentItem`
@@ -429,14 +522,15 @@ Stage and commit with a Conventional Commit message.
      - Check username not already taken (raise `409` if taken)
      - Hash password with passlib bcrypt
      - Call `user_repo.create()`
-   - `login_user(db, username, password) → Session`
+   - `login_user(db, username, password) → tuple[User, Session]`
      - Get user by username (raise `401` if not found)
      - Check account not locked (raise `423` with retry-after if locked)
      - Verify password hash (raise `401` if wrong)
        - On wrong password: `increment_failed_attempts`, lock if threshold reached
      - `reset_failed_attempts` on success
      - Create session via `session_repo.create()` with TTL from settings
-     - Return session
+     - Return `(user, session)` — the route needs both: `user` to build the
+       `AuthResponse`, `session.id` to set the cookie
    - `logout_user(db, session_id) → None`
      - Call `session_repo.revoke()`
 
@@ -446,8 +540,8 @@ Stage and commit with a Conventional Commit message.
    - `generate_content(db, content_item_id, author_id) → ContentItem`
      - Fetch content item (verify ownership)
      - Record start time before the OpenAI call
-     - Call OpenAI chat completions to generate title + description + story
-       in one call
+     - Call OpenAI chat completions to generate title + synopsis +
+       description + story in one call
      - On success:
        - Calculate `latency_ms`
        - Log to `model_call_log` via `model_call_log_repo.create()` with token counts
@@ -478,15 +572,24 @@ Stage and commit with a Conventional Commit message.
    - No auth required
 
 2. Create `backend/app/routes/auth.py`:
+   - Imports include `limiter` from `app.limiter` and `settings` from
+     `app.config`
    - `POST /auth/register` → `AuthResponse` (201)
+     - Decorate with `@limiter.limit(settings.AUTH_RATE_LIMIT)` (rate limited
+       per remote IP). The handler MUST take `request: Request` as a parameter
+       — slowapi reads it to extract the remote address.
      - Call `auth_service.register_user()`, return user data
    - `POST /auth/login` → `AuthResponse` (200)
-     - Call `auth_service.login_user()`
-     - Set HTTP-only session cookie using `settings` values
-     - Return user data
+     - Decorate with `@limiter.limit(settings.AUTH_RATE_LIMIT)` (same pattern;
+       `request: Request` parameter required)
+     - Call `auth_service.login_user()` → unpack `(user, session)`
+     - Set HTTP-only session cookie from `session.id` using `settings` values
+       (cookie name, TTL)
+     - Return `AuthResponse` built from `user`
    - `POST /auth/logout` → `MessageResponse` (200)
-     - Require valid session (use `get_current_user` dependency)
-     - Call `auth_service.logout_user()`, clear the session cookie
+     - Use `get_current_session` dependency (this also gates auth — 401 if no
+       valid session)
+     - Call `auth_service.logout_user(db, session.id)`, clear the session cookie
    - `GET /auth/me` → `AuthResponse` (200)
      - Require valid session, return current user data
 
@@ -530,6 +633,9 @@ committing.
    - `TestClient` fixture using httpx + the FastAPI app
    - In-memory SQLite database for tests
    - Bootstrap test DB schema before tests
+   - Disable rate limiting for tests: import the `limiter` from `app.limiter`
+     and set `limiter.enabled = False` once at module/fixture setup. Tests
+     all share `127.0.0.1` and would otherwise trip `AUTH_RATE_LIMIT`.
    - Helper to create a test user and return auth cookie
    - Helper to create a second test user (for ownership tests)
    - Tear down after each test
@@ -592,7 +698,7 @@ Show me the startup output. I want to confirm:
 - DB bootstrap runs (tables created)
 - Server running on port 8000
 
-I will manually verify Swagger at http://localhost:8000/api/docs in the browser.
+I will manually verify Swagger at http://localhost:8000/docs in the browser.
 After I confirm, I will stop the server with Ctrl+C.
 ```
 
@@ -636,6 +742,19 @@ Stage and commit with a Conventional Commit message.
 
 19.
 ```
+**Input:** Run the **`log-claude-build`** procedure in **`.claude/skills/log-claude-build.md`** for **`VIDEO_2.1`**.
+
+**Context:**
+- The skill was installed in **VIDEO_1**. Execute it yourself now—do not ask the learner to trigger the skill manually.
+- Stay on **`feat/backend-mvp`**. Ground summaries in **`git log` / `git diff`** for harness paths only (`CLAUDE.md`, `.claude/`, and harness-related root **`.env.example`** if it changed this phase).
+
+**Execution:**
+1. Follow the skill end-to-end with **`VIDEO_ID=VIDEO_2.1`**.
+2. Stage and commit with: `docs: VIDEO_2.1 harness build notes`
+```
+
+20.
+```
 **Input:** Summarize the commits on this branch, push it to origin, and open
 a PR against `main` using the `gh` CLI.
 
@@ -663,13 +782,14 @@ with OpenAI, unit tests, and Postman collection.
 ### Architecture
 - `backend/app/config.py` — Pydantic Settings for all env vars
 - `backend/app/database.py` — SQLAlchemy engine, session factory, auto-bootstrap
-- `backend/app/main.py` — FastAPI app, CORS, lifespan, Swagger at /docs
+- `backend/app/main.py` — FastAPI app, CORS, lifespan, slowapi wiring, Swagger at /docs
+- `backend/app/limiter.py` — slowapi `Limiter` instance shared by main.py and auth routes (separate module to avoid circular imports)
 - `backend/app/models/` — User, Session, ContentItem, ModelCallLog
 - `backend/app/schemas/` — request/response contracts (no raw dicts)
 - `backend/app/repositories/` — all DB access in one place
 - `backend/app/services/` — business logic, OpenAI calls, model call logging
-- `backend/app/routes/` — thin handlers: health, auth, content
-- `backend/app/dependencies/` — shared auth guard, ownership guard (404 pattern)
+- `backend/app/routes/` — thin handlers: health, auth (rate-limited register/login), content
+- `backend/app/dependencies/` — shared session/auth guards, ownership guard (404 pattern)
 
 ### API surface
 - GET /api/health
@@ -682,6 +802,7 @@ with OpenAI, unit tests, and Postman collection.
 - Ruff lint clean
 - App starts cleanly, Swagger loads at /docs
 - DB bootstraps automatically on startup
+- Rate limiting (`AUTH_RATE_LIMIT`) enforced on `POST /auth/register` and `POST /auth/login` via slowapi; disabled in tests
 
 ### Config additions
 - CLAUDE.md updated for Phase 2.1

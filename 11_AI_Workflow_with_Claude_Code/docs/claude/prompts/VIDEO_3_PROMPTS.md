@@ -17,9 +17,10 @@ Phase 3. Do not create a new file.
 - Raw `git add` / `git commit` continue to be used locally. Only the *remote*
   GitHub operations shift from `gh` CLI to GitHub MCP from this phase on.
 - `GH_PAT`, `GH_USERNAME`, `GH_REPO` are already populated in `.env`
-  (documented in `.env.example` since VIDEO_0).
-- Keep the current "MCP servers" section as a single list — Context7 stays,
-  GitHub MCP is added.
+  (documented in `.env.example` since **VIDEO_1**).
+- MCP servers themselves are listed in `.claude/README.md` (updated in
+  prompt 4 of this file), NOT in `CLAUDE.md` — keep `CLAUDE.md` focused on
+  project-level concerns.
 - Do NOT change sections unrelated to Phase 3 (coding standards, validate-
   and-fix skill, commands, rules).
 
@@ -70,8 +71,11 @@ Phase 3. Do not create a new file.
 Please check git status, then create and checkout a new feature branch called
 feat/extending-claude-code. Confirm we are on the new branch.
 
-Note: this is the last time we create a branch with raw git checkout -b. After
-this phase, branch creation moves to GitHub MCP.
+Note: this is the last time we create a branch with raw `git checkout -b`.
+After this phase, **remote** branch creation moves to GitHub MCP. The
+**local** checkout still uses `git fetch && git checkout` since Claude
+Code's shell has no native MCP-checkout — see VIDEO_4.1a/4.1b/4.2 prompt 3
+for the two-step pattern.
 ```
 
 3.
@@ -82,9 +86,13 @@ this phase, branch creation moves to GitHub MCP.
 **Context:**
 - `GH_PAT`, `GH_USERNAME`, `GH_REPO` are already populated in `.env` and
   documented in `.env.example`.
-- Follow the same config shape used for `.claude/mcp/context7.json` (also a
-  project-scoped MCP server) — this keeps the `.claude/mcp/` folder internally
-  consistent.
+- Use the standard MCP server JSON config format. Context7 and GitHub MCP
+  may use different transports (e.g. SSE/HTTP vs stdio), so the exact shape
+  may differ from `.claude/mcp/context7.json`. If unsure of GitHub MCP's
+  exact config shape, consult Context7 documentation for the official GitHub
+  MCP server (e.g. `@modelcontextprotocol/server-github` or current
+  equivalent) before writing the file. Keep secrets out of the file via
+  env-variable references.
 - The PAT value MUST be referenced by environment variable name. Do NOT
   hardcode the PAT string into the config file under any circumstances — the
   config is committed to git; the PAT is not.
@@ -168,32 +176,37 @@ and authenticated before we rely on them for the rest of this phase.
 
 6.
 ```
-**Input:** Add `OPENAI_API_KEY` to `.env.example` in a new Phase 3 section.
+**Input:** Annotate the existing `OPENAI_API_KEY` entry in `.env.example`
+to document its second consumer (the pr-reviewer agent).
 
 **Context:**
-- `OPENAI_API_KEY` is already in the developer's local `.env` (it has been
-  there since Phase 2.1 when the backend started using OpenAI) but has NOT
-  appeared in `.env.example` yet — we deliberately waited for the phase that
-  makes it a first-class concern.
-- The PR review agent calls OpenAI *directly* (outside of the backend's
-  Pydantic Settings layer). Same key, two consumers.
-- Preserve all existing sections in `.env.example` verbatim — only *append*
-  the new section.
+- `OPENAI_API_KEY` is already in `.env.example` from VIDEO_2.1 prompt 7
+  (under the `# AI (OpenAI)` sub-section of the Phase 2.1 backend block).
+  It is consumed there via Pydantic Settings.
+- Phase 3 introduces a SECOND consumer: the pr-reviewer agent calls OpenAI
+  *directly* (outside of the backend's Pydantic Settings layer).
+- We are NOT duplicating the variable — both consumers read the same env
+  variable. We only update the comment so future readers understand the key
+  now serves two callers.
 
 **Execution:**
-1. Append the following section to `.env.example`, directly below the last
-   existing Phase 2.1 variable:
+1. Edit `.env.example`. Find the existing `OPENAI_API_KEY=...` line in the
+   Phase 2.1 backend section and replace its preceding comment to note both
+   consumers. The `# AI (OpenAI)` line becomes:
 
    ```
-   # --- Phase 3: PR Review Agent ---
-   # OpenAI API key used by the pr-reviewer agent to call the OpenAI endpoint.
-   # The backend also uses OpenAI via its own Pydantic Settings — same key,
-   # two consumers, both reading from this single environment variable.
+   # AI (OpenAI) — used by the backend (via Pydantic Settings) AND by the
+   # pr-reviewer agent (which calls OpenAI directly). Same key, two consumers.
    OPENAI_API_KEY=your_openai_api_key_here
+   OPENAI_CHAT_MODEL=gpt-4o-mini
    ```
+
+   Do NOT add a new `# --- Phase 3: PR Review Agent ---` section — the
+   variable already lives in the Phase 2.1 block. Other variables in that
+   block (DATABASE_URL, sessions, auth, etc.) stay untouched.
 
 2. Stage and commit with:
-   `docs: add OPENAI_API_KEY to .env.example for pr-reviewer agent`
+   `docs: annotate OPENAI_API_KEY in .env.example for pr-reviewer agent`
 ```
 
 7.
@@ -241,6 +254,14 @@ to document the new folder and the agent.
    fetch the PR title and description for context.
 
    ### Step 2 — Send to OpenAI for review
+   `OPENAI_API_KEY` lives in the project-root `.env`, which is NOT
+   automatically loaded into Claude Code's shell. Load it explicitly before
+   calling OpenAI. Either approach is acceptable:
+   - Run a one-off Python helper that loads `.env` (e.g. via `python-dotenv`
+     or by reading the file directly) and POSTs to the OpenAI API, OR
+   - In bash: `set -a && . ./.env && set +a` to export `.env` vars, then
+     use `curl` with `Authorization: Bearer $OPENAI_API_KEY`.
+
    Call the OpenAI chat completions endpoint with:
    - Model: `gpt-4o`
    - System prompt:
@@ -289,6 +310,20 @@ to document the new folder and the agent.
 
 8.
 ```
+**Input:** Run the **`log-claude-build`** procedure in **`.claude/skills/log-claude-build.md`** for **`VIDEO_3`**.
+
+**Context:**
+- The skill was installed in **VIDEO_1**. Execute it yourself now—do not ask the learner to trigger the skill manually.
+- Stay on **`feat/extending-claude-code`** so the learning-log commit is included when you push the PR in the next prompt.
+- Ground summaries in **`git log` / `git diff`** for harness paths only (`CLAUDE.md`, `.claude/`, **`.env.example`**).
+
+**Execution:**
+1. Follow the skill end-to-end with **`VIDEO_ID=VIDEO_3`**.
+2. Stage and commit with: `docs: VIDEO_3 harness build notes`
+```
+
+9.
+```
 **Input:** Push the branch and open the PR using GitHub MCP — the first real
 GitHub MCP push and the first GitHub MCP PR in this project.
 
@@ -298,7 +333,7 @@ GitHub MCP push and the first GitHub MCP PR in this project.
   `gh pr create`. This is the transition prompt where the workflow flips.
 - Tests and lint are not relevant on this branch (no application code changed
   — only MCP config, agent definition, docs).
-- After this prompt, PROMPT 9 runs the new agent on the PR opened here, so
+- After this prompt, PROMPT 10 runs the new agent on the PR opened here, so
   the PR URL must be returned.
 
 **Execution:**
@@ -343,7 +378,7 @@ GitHub MCP push and the first GitHub MCP PR in this project.
    to the next prompt.
 ```
 
-9.
+10.
 ```
 **Input:** Run the `pr-reviewer` agent on the PR that was just opened for
 `feat/extending-claude-code`.
@@ -372,7 +407,7 @@ GitHub MCP push and the first GitHub MCP PR in this project.
    Review comments are posted — check the PR when you're ready."
 ```
 
-10.
+11.
 ```
 **Input:** Merge `feat/extending-claude-code` into `main` via GitHub MCP,
 then sync local `main`.
@@ -389,13 +424,17 @@ then sync local `main`.
    so I can verify the merge landed.
 ```
 
-11.
+12.
 ```
 **Input:** Address the issue raised by the agent, push the fix, re-run the
 review, and merge once clean.
 
 **Context:**
-- The agent flagged: [describe the specific issue from the review comment].
+- The agent flagged a concrete issue in its PR review comment — **replace this
+  bullet with a one-sentence summary of that finding** before executing (e.g.
+  “missing error handling on MCP timeout” or “PAT scope insufficient for merge”).
+  If you are recording this video live, paste the real reviewer text here for the
+  audience. This prompt is optional unless prompt 10’s review reported problems.
 - Fix the root cause — do not just silence the symptom.
 - Use GitHub MCP for push, re-review, and merge. Raw git is still fine for
   local staging/committing.
@@ -407,7 +446,8 @@ review, and merge once clean.
    "fix review" — describe *what* was fixed).
 3. Using GitHub MCP, push the fix to `feat/extending-claude-code`.
 4. Re-run the `pr-reviewer` agent on the PR and report back the new outcome.
-5. Once the re-review is clean, use GitHub MCP to merge into `main`,
+5. Run **`log-claude-build`** for **`VIDEO_3`** again (per `.claude/skills/log-claude-build.md`) so harness notes reflect any fix that touched `CLAUDE.md`, `.claude/`, or harness **`.env.example`**. Stage and commit only if docs changed: `docs: refresh VIDEO_3 harness build notes`.
+6. Once the re-review is clean, use GitHub MCP to merge into `main`,
    checkout `main` locally, pull, and confirm clean.
 ```
 

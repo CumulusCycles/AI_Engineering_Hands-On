@@ -171,18 +171,26 @@ conventions, one for database/migrations — derived directly from
 **Execution:**
 1. Create `.claude/rules/backend-fastapi.md` with these rules:
    - Route handlers must be thin — no business logic, only parse input, call service, return response
-   - Business logic lives in service modules under `backend/services/`
+   - Business logic lives in service modules under `backend/app/services/`
    - All database access goes through repository modules — no queries in routes or services
    - Every request/response shape uses a Pydantic schema — no raw dicts across API boundaries
+   - Pydantic v2 response schemas that wrap ORM rows MUST set
+     `model_config = ConfigDict(from_attributes=True)` so FastAPI can
+     serialize SQLAlchemy instances directly via `response_model=...`
    - Auth/session checking uses a single shared FastAPI dependency
    - Ownership enforcement (author can only access own content) uses a single shared dependency
      that returns 404 for wrong owner — never 200 with empty body
    - Admin-only routes use a separate admin guard dependency — never copy-pasted per route
+   - Our auth `Session` model (`app/models/session.py`) collides with
+     SQLAlchemy's `Session`. Project-wide convention: ALWAYS alias OUR model
+     as `AuthSession` (`from app.models.session import Session as AuthSession`)
+     and leave SQLAlchemy's `Session` un-aliased. Apply consistently in every
+     file that touches both
    - Error responses follow a consistent JSON shape: `{"code": "...", "message": "..."}`.
      No stack traces, no internal details exposed to the client.
    - Every OpenAI API call must be logged to the `model_call_log` table before returning
 2. Create `.claude/rules/database-and-migrations.md` with these rules:
-   - SQLAlchemy 2.x declarative models — one model class per file under `backend/models/`
+   - SQLAlchemy 2.x declarative models — one model class per file under `backend/app/models/`
    - Schema must bootstrap automatically on app startup — no manual migration step for dev
    - No raw SQL strings anywhere in the codebase — use SQLAlchemy query API only
    - All model relationships declared explicitly with `relationship()` and foreign keys
@@ -265,6 +273,20 @@ asked to validate and fix a codebase.
 
 9.
 ```
+**Input:** Add the **`log-claude-build`** skill file only — do **not** run it yet.
+
+**Context:**
+- A later prompt will run this procedure for **`VIDEO_1`**, matching how other **`VIDEO_*`** modules install the skill once (here) then call it at the end of the phase.
+- Create **`.claude/skills/log-claude-build.md`** by copying **`docs/claude/templates/log-claude-build.skill.md`** from the **first line after** the first `---` horizontal rule through end of file (exclude the template title and maintainer note above that rule).
+
+**Execution:**
+1. Create **`.claude/skills/log-claude-build.md`** from the template.
+2. Update **`.claude/README.md`** so the skills list mentions both **`validate-and-fix`** and **`log-claude-build`** (how to invoke / what each is for — one line each).
+3. Stage and commit with: `feat: add log-claude-build skill`
+```
+
+10.
+```
 **Input:** Configure the Context7 MCP server for this project and register it
 in the `.claude/` folder.
 
@@ -287,7 +309,21 @@ in the `.claude/` folder.
 3. Stage all changes and commit with a Conventional Commit message.
 ```
 
-10.
+11.
+```
+**Input:** Run the **`log-claude-build`** procedure in **`.claude/skills/log-claude-build.md`** for **`VIDEO_1`**.
+
+**Context:**
+- The skill file was created in **prompt 9**; **Context7** was added in **prompt 10** — this run must reflect the **full** Phase 1 harness through **prompt 10**.
+- Execute it yourself—do not ask the learner to trigger the skill manually.
+- Stay on **`feat/claude-config`**. Use **`git log`** / **`git diff`** for harness paths only (`CLAUDE.md`, `.claude/`, harness-related root **`.gitignore`** / **`.env.example`**). Do **not** describe future **`backend/`** or **`frontend/`** work.
+
+**Execution:**
+1. Follow the skill end-to-end with **`VIDEO_ID=VIDEO_1`** (write **`docs/claude/build-notes/VIDEO_1.md`**, update **`docs/claude/CLAUDE_CODE_BUILD_LOG.md`**).
+2. Stage and commit with: `docs: VIDEO_1 harness build notes`
+```
+
+12.
 ```
 **Input:** Push the branch, summarize the commits, and open a PR against `main`.
 
@@ -320,7 +356,10 @@ derived from the project requirements and design specifications.
 - `.claude/rules/frontend-react-vite-typescript.md` — React/TS conventions, design alignment
 - `.claude/rules/coding-standards.md` — code quality, naming, error handling, commit format
 - `.claude/skills/validate-and-fix.md` — reusable build→test→fix→repeat loop skill
+- `.claude/skills/log-claude-build.md` — per-video Claude Code learning log (harness only)
 - `.claude/mcp/context7.json` — Context7 MCP server for live library documentation
+- `docs/claude/build-notes/VIDEO_1.md` — VIDEO_1 harness learning notes
+- `docs/claude/CLAUDE_CODE_BUILD_LOG.md` — cumulative harness log (VIDEO_1 section added or updated)
 
 ### Why configuration before application code
 Grounding Claude in the project architecture, constraints, and conventions before

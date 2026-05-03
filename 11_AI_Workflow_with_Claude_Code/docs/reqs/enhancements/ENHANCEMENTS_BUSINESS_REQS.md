@@ -1,7 +1,7 @@
 # ScriptSprout — Business requirements (post-MVP enhancements)
 
 **Document type:** Milestone scope — **not** a second product definition  
-**Audience:** Engineering during **enhancement / Video 13** work  
+**Audience:** Engineering during **enhancement / VIDEO_4.1a–4.2** work  
 **Assumption:** **MVP is complete** (author auth, single-pass generation, history/detail, persistence, model logging).
 
 ---

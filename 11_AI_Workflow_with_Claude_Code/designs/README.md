@@ -60,16 +60,16 @@ All paths below are relative to the **`designs/`** folder (e.g. `mockup-pages/au
 
 | File | Description |
 |------|-------------|
-| `mockup-pages/generation-form-empty.html` | Author studio — prompt extraction empty; no content rows yet. |
-| `mockup-pages/generation-form-loading.html` | Author studio — extraction in progress (`Extracting…`). |
-| `mockup-pages/generation-form-error.html` | Author studio — extraction error with actionable message. |
+| `mockup-pages/generation-form-empty.html` | Author studio — generation form empty; no content rows yet. |
+| `mockup-pages/generation-form-loading.html` | Author studio — generation in progress (`Generating…`). |
+| `mockup-pages/generation-form-error.html` | Author studio — generation error with actionable message. |
 | `mockup-pages/generation-results.html` | Author studio — draft approvals + story and media success state. |
 
 ### History (MVP)
 
 | File | Description |
 |------|-------------|
-| `mockup-pages/history-empty.html` | Author studio — no content rows; CTA to create from extraction. |
+| `mockup-pages/history-empty.html` | Author studio — no content rows; CTA to create from the generation form. |
 | `mockup-pages/history-list.html` | Author studio — content row picker with context. |
 | `mockup-pages/history-detail.html` | Author studio — draft review block for one item (synopsis / title / description). |
 

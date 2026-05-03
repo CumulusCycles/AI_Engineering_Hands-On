@@ -1,7 +1,7 @@
 # ScriptSprout — Technical requirements (MVP milestone)
 
 **Document type:** Milestone scope — **not** a second architecture spec  
-**Audience:** Engineering during **MVP / Video 12** work
+**Audience:** Engineering during **MVP / VIDEO_2.1–2.2** work
 
 ---
 
@@ -29,7 +29,7 @@ Per master **[`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md) §2** — MVP MUST u
 - **Frontend:** **React**, **TypeScript**, **Vite**  
 - **Auth:** **Server-side sessions** + **HTTP-only** session cookie  
 - **AI:** OpenAI (or compatible) via official SDK; **single** text generation path acceptable for “title + description + story” in MVP  
-- **Layout:** **Milestone / repo convention** (not prescribed in master [`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md)): monorepo with **`backend/`** and **`frontend/`** as siblings — keep unless the master doc or team explicitly changes it
+- **Layout:** **Milestone / repo convention** (not prescribed in master [`../TECHNICAL_REQS.md`](../TECHNICAL_REQS.md)): monorepo with **`backend/`** and **`frontend/`** as siblings at the repo root; FastAPI application code lives under the importable package **`backend/app/`** (e.g. `backend/app/main.py`, `backend/app/routes/`, …) with **`backend/tests/`** beside that package — keep unless the master doc or team explicitly changes it
 
 ### Architecture (MVP)
 

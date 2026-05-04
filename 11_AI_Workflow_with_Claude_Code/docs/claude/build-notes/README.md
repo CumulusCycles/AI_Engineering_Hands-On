@@ -1,5 +1,7 @@
 # Claude Code build notes (learner-generated)
 
+**Before you follow any `VIDEO_*` prompts:** complete **Human developer setup** in **[`../prompts/README.md`](../prompts/README.md)** (GitHub repo, PAT, **`.env`**, **`gh`**, baseline **`git push`**, required spec reading).
+
 This folder holds **per-video learning logs** produced while you follow the **`VIDEO_*`** prompts. Files here are **not** part of the ScriptSprout product spec—they explain **what you configured in Claude Code** (`CLAUDE.md`, `.claude/`, harness-related root files).
 
 ## Who does what (pedagogy logging only)

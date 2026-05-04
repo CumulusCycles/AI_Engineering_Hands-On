@@ -1,6 +1,6 @@
 # Claude documentation
 
-This folder is for **people** reading the repo: **reference** material and **numbered prompts** (`VIDEO_*`) that you paste into **Claude Code** when you build ScriptSprout in a working tree. It is **not** the generated project harness—root **`CLAUDE.md`**, **`.claude/`**, **`backend/`**, and **`frontend/`** appear **after** you run those prompts (see the chapter **`README.md`** one level up).
+This folder is for **people** reading the repo: **reference** material and **numbered prompts** (`VIDEO_*`) that you paste into **Claude Code** when you build ScriptSprout in a working tree. **Before** opening any **`VIDEO_*`** file, complete **[`prompts/README.md`](prompts/README.md)** — human setup (GitHub repo, PAT, **`.env`**, **`gh`**, baseline **`git push`**), directory listing, and per-module summaries. It is **not** the generated project harness—root **`CLAUDE.md`**, **`.claude/`**, **`backend/`**, and **`frontend/`** appear **after** you run those prompts (see the chapter **`README.md`** one level up).
 
 ---
 
@@ -38,13 +38,16 @@ Prompts **run** **`log-claude-build` for you** (install from **[`templates/log-c
 
 ## Reference in this folder
 
+- **[`prompts/README.md`](prompts/README.md)** — **Human developer setup** before any **`VIDEO_*`** prompts; **`prompts/`** directory listing; what each **`VIDEO_*_PROMPTS.md`** module contains.
 - **[`GLOBAL.CLAUDE.md`](GLOBAL.CLAUDE.md)** — global-style Claude guidance (reference copy; not the same as your generated project-root `CLAUDE.md`).
 
 ---
 
 ## `prompts/`
 
-Numbered prompt files—**one file per video module**—in the order you run them in Claude Code:
+**Human setup before any prompts:** see **[`prompts/README.md`](prompts/README.md)** (GitHub repo, PAT, `.env`, `gh`, push baseline, required reading, directory listing, module summaries).
+
+Numbered prompt files—**one file per video module**—in the order you run them in Claude Code (details in **[`prompts/README.md`](prompts/README.md)**):
 
 - [prompts/VIDEO_1_PROMPTS.md](prompts/VIDEO_1_PROMPTS.md)
 - [prompts/VIDEO_2.1_PROMPTS.md](prompts/VIDEO_2.1_PROMPTS.md)
